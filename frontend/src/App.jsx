@@ -1,13 +1,20 @@
 
 import React from 'react'
+import { Routes } from 'react-router-dom'
+import { Route } from 'react-router-dom'
+
+import SignIn from './pages/SignIn.jsx'
+import SignUp from './pages/SignUp.jsx'
 
 function App() {
   return (
-    <h1 className="text-3xl font-bold text-blue-600">
-      Tailwind Working 🚀
-    </h1>
-
+    <Routes>
+      <Route path='/' element={<SignUp />}></Route>
+      <Route path='/signup' element={<SignUp />} ></Route>
+      <Route path='/signIn' element={<SignIn />} ></Route>
+    </Routes>
   )
 }
+
 
 export default App
