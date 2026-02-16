@@ -7,7 +7,7 @@ import genToken from "../utils/token.js";
 export const signup = async (req, res) => {
   const { fullName, email, password, mobile, role } = req.body;
 
-  const user = await User.findOne({ email });
+  let user = await User.findOne({ email });
 
   try {
     if (user) {
