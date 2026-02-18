@@ -54,12 +54,11 @@ function SignIn() {
         </div>
         {/* Forgot Password */}
         <div className='w-full flex justify-end mb-2 '  >
-          <div className=' text-[#ff4d2d] text-sm cursor-pointer ' style={{}} >
+          <div className=' text-[#ff4d2d] text-sm cursor-pointer ' onClick={() => navigate("/forgot-password")} style={{}} >
             Forgot Password
           </div>
 
         </div>
-
 
         {/* SignUp */}
         <div className="flex items-center justify-center mb-4">
@@ -78,9 +77,6 @@ function SignIn() {
         <div className='' >
           <p className='text-sm text-center cursor-pointer ' onClick={() => navigate("/signup")} >Want to create a new account? <span className='text-[#ff4d2d] font-semibold' >SignUp</span></p>
         </div>
-
-
-
 
 
       </div>
