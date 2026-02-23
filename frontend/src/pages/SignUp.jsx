@@ -6,6 +6,13 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { serverUrl } from '../App.jsx';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "firebase/auth"
+import { auth } from '../../firebase.js';
+
 
 
 function SignUp() {
@@ -21,6 +28,7 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
 
   const handleSignUp = async (params) => {
@@ -40,6 +48,39 @@ function SignUp() {
 
     } catch (error) {
       console.log("Backend Error:", error.response.data.message);
+    }
+
+  }
+
+  const handleGoogleAuth = async () => {
+
+    if (!mobile) {
+      return alert("Mobile Number is required for Google SignUp");
+    }
+
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    console.log("Google Sign-In successful. User:", user);
+
+
+    try {
+
+      await axios.post(`${serverUrl}/api/auth/google-auth`, {
+        fullName: user.displayName,
+        email: user.email,
+        mobile: mobile,
+        role: role
+      }, {
+        withCredentials: true
+      });
+      console.log("Google Auth Backend Success");
+
+    } catch (error) {
+
+      console.log("Google Auth Backend Error:", error);
+
     }
 
   }
@@ -65,7 +106,8 @@ function SignUp() {
         {/* Mobile */}
         <div className='mb-4'>
           <label htmlFor="mobile" className='font-medium mb-1'>Mobile Number</label>
-          <input id='mobile' onChange={(e) => setMobile(e.target.value)} value={mobile} type="text" placeholder='Enter your Mobile Number' className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs  ' style={{ border: `1px solid ${borderColor}` }} />
+          <input id='mobile' onChange={(e) => setMobile(e.target.value)} value={mobile} type="text" placeholder='Enter your Mobile Number'
+            className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs ' style={{ border: `1px solid ${borderColor}` }} />
         </div>
         {/* Password */}
         <div className='mb-4'>
@@ -107,7 +149,7 @@ function SignUp() {
         </div>
         {/* Google SignUp */}
         <div className='mb-2'>
-          <button className='w-full flex justify-center gap-2 border cursor-pointer border-gray-300 rounded-md py-2 px-4 hover:bg-gray-200 transition-colors' >
+          <button onClick={handleGoogleAuth} className='w-full flex justify-center gap-2 border cursor-pointer border-gray-300 rounded-md py-2 px-4 hover:bg-gray-200 transition-colors' >
             <FcGoogle size={24} className='' />
             <span>Signup with Google </span>
           </button>
@@ -116,10 +158,6 @@ function SignUp() {
         <div className='' >
           <p className='text-sm text-center cursor-pointer ' onClick={() => navigate("/signin")} >Already have an account? <span className='text-[#ff4d2d] font-semibold' >SignIn</span></p>
         </div>
-
-
-
-
 
       </div>
     </div >
