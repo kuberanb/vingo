@@ -37,7 +37,7 @@ function ForgotPassword() {
             setStep(3);
 
         } catch (error) {
-            console.log(`Verify Otp Error : ${error.message}`);
+            console.log(`Verify Otp Error : ${error.response.data.message}`);
         }
 
     }
@@ -56,7 +56,7 @@ function ForgotPassword() {
             navigate("/signin");
 
         } catch (error) {
-            console.log(`Reset Password Error : ${error.message}`);
+            console.log(`Reset Password Error : ${error.response.data.message}`);
         }
 
     }

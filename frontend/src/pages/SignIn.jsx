@@ -21,6 +21,7 @@ function SignIn() {
 
     try {
       await axios.post(`${serverUrl}/api/auth/signin`, { email, password }, { withcredentials: true });
+      console.log("SignIn Successfull");
     } catch (error) {
       console.log(`Error SignIn : ${error.response.data.message}`);
     }
