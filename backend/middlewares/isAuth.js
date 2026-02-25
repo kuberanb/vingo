@@ -8,13 +8,13 @@ const isAuth = (req, res, next) => {
       return res.status(400).json({ message: "token not found" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     req.userId = decoded.userId;
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: "isAuth middleware error" });
+    return res.status(500).json({ message: "isAuth middleware error" });
   }
 };
 

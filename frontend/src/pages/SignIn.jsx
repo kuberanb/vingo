@@ -5,8 +5,6 @@ import { FcGoogle } from 'react-icons/fc';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { ClipLoader } from "react-spinners";
-
-
 import { GoogleAuthProvider, signInWithPopup } from '@firebase/auth';
 import { auth } from '../../firebase';
 
