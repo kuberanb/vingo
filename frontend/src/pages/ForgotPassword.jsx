@@ -98,7 +98,7 @@ function ForgotPassword() {
                         <input id='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter you Email' className=' text-sm rounded-sm border w-full border-[#ddd] px-3 py-1.5   placeholder:text-xs  ' type="text" />
 
                     </div>        <div className="flex items-center justify-center mb-4">
-                        <button onClick={() => handleSendOtp(email)} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
+                        <button onClick={() => handleSendOtp(email)} disabled={loading} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
                             {loading ? <ClipLoader size={20} color="#ffffff" /> : "Send Otp"}
                         </button>
 
@@ -119,7 +119,7 @@ function ForgotPassword() {
                             <input id='otp' value={otp} onChange={(e) => setOtp(e.target.value)} placeholder='Enter you Otp' className=' text-sm rounded-sm border w-full border-[#ddd] px-3 py-1.5   placeholder:text-xs  ' type="text" />
 
                         </div>        <div className="flex items-center justify-center mb-4">
-                            <button onClick={() => handleVerifyOtp(email, otp)} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
+                            <button onClick={() => handleVerifyOtp(email, otp)} disabled={loading} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
                                 {loading ? <ClipLoader size={20} color="#ffffff" /> : "Verify Otp"}
                             </button>
 
@@ -143,7 +143,7 @@ function ForgotPassword() {
                             <input id='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Confirm Password' className=' text-sm rounded-sm border w-full border-[#ddd] px-3 py-1.5   placeholder:text-xs  ' type="text" />
                         </div>
                         <div className="flex items-center justify-center mb-4">
-                            <button onClick={() => handleResetPassword(email, passowrd)} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
+                            <button onClick={() => handleResetPassword(email, passowrd)} disabled={loading} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
                                 {loading ? <ClipLoader size={20} color="#ffffff" /> : "Reset Password"}
                             </button>
 
