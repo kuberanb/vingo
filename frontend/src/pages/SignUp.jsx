@@ -13,6 +13,8 @@ import {
 } from "firebase/auth"
 import { auth } from '../../firebase.js';
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice.js';
 
 
 function SignUp() {
@@ -30,14 +32,14 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
 
   const handleSignUp = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await axios.post(`${serverUrl}/api/auth/signup`, {
+      const result = await axios.post(`${serverUrl}/api/auth/signup`, {
         fullName,
         email,
         password,
@@ -46,8 +48,9 @@ function SignUp() {
       }, {
         withCredentials: true
       });
+      dispatch(setUserData(result.data));
 
-      console.log("Sign up successful:", response.data);
+      console.log("Sign up successful:", result);
       setError("");
 
     } catch (error) {
@@ -73,6 +76,10 @@ function SignUp() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+
+    // ✅ Make it serializable
+    const safeUser = JSON.parse(JSON.stringify(user));
+    dispatch(setUserData(safeUser));
 
     console.log("Google Sign-In successful. User:", user);
 

@@ -7,6 +7,8 @@ import { serverUrl } from '../App';
 import { ClipLoader } from "react-spinners";
 import { GoogleAuthProvider, signInWithPopup } from '@firebase/auth';
 import { auth } from '../../firebase';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 
 function SignIn() {
 
@@ -20,7 +22,7 @@ function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // ✅ NORMAL SIGN IN
@@ -29,11 +31,12 @@ function SignIn() {
     setError("");
 
     try {
-      await axios.post(
+      const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
         { email, password },
         { withCredentials: true }
       );
+      dispatch(setUserData(result.data));
 
       console.log("SignIn Successful");
       navigate("/"); // redirect after login

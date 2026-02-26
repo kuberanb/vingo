@@ -13,12 +13,17 @@ export const serverUrl = "http://localhost:8000";
 function App() {
   useGetCurentUser();
   return (
+    
     <Routes>
       <Route path='/' element={<SignUp />}></Route>
       <Route path='/signup' element={<SignUp />} ></Route>
       <Route path='/signIn' element={<SignIn />} ></Route>
       <Route path='forgot-password' element={<ForgotPassword />} ></Route>
     </Routes>
+
+
+
+
   )
 }
 
