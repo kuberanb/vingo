@@ -79,14 +79,13 @@ function SignUp() {
 
     // ✅ Make it serializable
     const safeUser = JSON.parse(JSON.stringify(user));
-    dispatch(setUserData(safeUser));
 
     console.log("Google Sign-In successful. User:", user);
 
 
     try {
 
-      await axios.post(`${serverUrl}/api/auth/google-auth`, {
+      let response = await axios.post(`${serverUrl}/api/auth/google-auth`, {
         fullName: user.displayName,
         email: user.email,
         mobile: mobile,
@@ -94,6 +93,8 @@ function SignUp() {
       }, {
         withCredentials: true
       });
+
+      dispatch(setUserData(response.data));
       console.log("Google Auth Backend Success");
       setError("");
 
