@@ -8,6 +8,8 @@ import { IoMdClose } from "react-icons/io";
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { setUserData } from '../redux/userSlice';
+import { FaPlus } from "react-icons/fa6";
+import { IoReceipt } from "react-icons/io5";
 
 
 function Nav() {
@@ -33,7 +35,6 @@ function Nav() {
   }
 
 
-
   return (
     <div className=''>
 
@@ -43,47 +44,70 @@ function Nav() {
         <h1 className='text-3xl font-bold  text-[#ff4d2d]' >Vingo</h1>
 
         {/* Center */}
-        <div className=' h-12 md:w-[55%] lg:w-[40%]  shadow-xl hidden px-4  md:flex items-center '  >
-          <div className='flex gap-2 items-center px-5 ' >
-            <FaLocationDot size={20} className='text-[#ff4d2d]' />
-            <div className='text-sm overflow-hidden ellipsis' >{city}</div>
+        {
+          userData?.role !== "owner" && <div className=' h-12 md:w-[55%] lg:w-[40%]  shadow-xl hidden px-4  md:flex items-center '  >
+            <div className='flex gap-2 items-center px-5 ' >
+              <FaLocationDot size={20} className='text-[#ff4d2d]' />
+              <div className='text-sm overflow-hidden ellipsis' >{city}</div>
+            </div>
+            {/* Vertical Divider */}
+            <div className="w-px h-5 bg-gray-300 mx-3"></div>
+
+            <div className='flex items-center gap-2 w-full'>
+              <IoSearchOutline size={20} className='text-[#ff4d2d]' />
+              <input placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
+            </div>
+
           </div>
-          {/* Vertical Divider */}
-          <div className="w-px h-5 bg-gray-300 mx-3"></div>
 
-          <div className='flex items-center gap-2 w-full'>
-            <IoSearchOutline size={20} className='text-[#ff4d2d]' />
-            <input placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
-          </div>
-
-
-        </div>
+        }
 
         {/* Right */}
         <div className='flex items-center gap-4 '>
+
           {
-            !isSearchOpen ? (<IoSearchOutline onClick={() => setIsSearchOpen(!isSearchOpen)} size={35} className='text-[#ff4d2d] md:hidden font-bold  cursor-pointer ' />
-            ) : (<IoMdClose onClick={() => setIsSearchOpen(!isSearchOpen)} size={35} className='text-[#ff4d2d] md:hidden font-bold  cursor-pointer ' />
-            )
+            userData?.role == "owner" ? <>
+              <button className='cursor-pointer flex items-center gap-2  md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg '  >
+                <FaPlus size={20} className='text-[#ff4d2d]' />
+                <span className=' hidden md:flex'>Add Food Item</span>
+
+              </button>
+              <button className='flex items-center gap-2 cursor-pointer  bg-[#ff4d2d]/10 px-4 py-2 rounded-lg relative'>
+                <IoReceipt size={20} className=' text-[#ff4d2d] ' />
+                <span className='hidden md:flex  text-[#ff4d2d]  '>My Orders</span>
+                <span className='absolute -top-3 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center font-bold justify-center text-xs'>0</span>
+              </button>
+
+            </> : (<>
+              {
+                !isSearchOpen ? (<IoSearchOutline onClick={() => setIsSearchOpen(!isSearchOpen)} size={35} className='text-[#ff4d2d] md:hidden font-bold  cursor-pointer ' />
+                ) : (<IoMdClose onClick={() => setIsSearchOpen(!isSearchOpen)} size={35} className='text-[#ff4d2d] md:hidden font-bold  cursor-pointer ' />
+                )
+
+              }
+              <div className='flex items-center justify-center relative cursor-pointer'>
+                <MdOutlineShoppingCart className='' size={30} />
+                <p className=' absolute -top-2.5 right-5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs' >0</p>
+              </div>
+              <button className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
+
+            </>)
 
           }
 
-          <div className='flex items-center justify-center relative cursor-pointer'>
-            <MdOutlineShoppingCart className='' size={30} />
-            <p className=' absolute -top-2.5 right-5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs' >0</p>
-          </div>
-          <button className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
+
+
           <div onClick={() => setIsProfileOpen(!isProfileOpen)} className='h-12 w-12 flex justify-center items-center rounded-full text-white text-xl  bg-amber-800 border-2 border-amber-700 relative cursor-pointer'>{userData?.fullName?.charAt(0)}</div>
         </div>
+
+
+
         {isProfileOpen && (
           <div className="absolute top-14 right-0 w-44 bg-white shadow-lg rounded-lg z-9999">
             <p className="px-4 py-2 text-sm border-b">
               {userData?.fullName}
             </p>
-            <button className=" w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-              My Profile
-            </button>
-            <button className=" w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+            <button className=" md:hidden w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
               My Orders
             </button>
             <button onClick={handleLogout} className=" w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
