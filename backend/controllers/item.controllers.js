@@ -26,9 +26,9 @@ export const addItem = async (req, res) => {
     });
 
     item.populate("shop");
-    res.status(201).json({ item });
+    return res.status(201).json({ item });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error adding item",
       error: error.message,
     });
@@ -70,9 +70,9 @@ export const editItem = async (req, res) => {
     }
 
     item.populate("shop");
-    res.status(200).json({ item });
+    return res.status(200).json({ item });
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({ message: "Error editing item", error: error.message });
   }

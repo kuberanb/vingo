@@ -29,11 +29,28 @@ export const createEditShop = async (req, res) => {
     }
 
     await shop.populate("owner");
-    res.status(201).json({ shop });
+    return res.status(201).json({ shop });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error creating or editing shop",
       error: error.message,
     });
+  }
+};
+
+export const getCurrentShop = async (req, res) => {
+  try {
+    let shop = await Shop.findOne({ owner: req.userId }).populate(
+      "owner items",
+    );
+
+    if (!shop) {
+      return null;
+    }
+    return res.status(200).json({ shop });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting current shop : ${error.message}` });
   }
 };

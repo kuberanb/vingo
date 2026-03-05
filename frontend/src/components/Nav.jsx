@@ -17,6 +17,7 @@ function Nav() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const userData = useSelector((state) => state.user.userData);
   const city = useSelector((state) => state.user.city);
+  const myShopData = useSelector((state) => state.owner.myShopData);
   const dispatch = useDispatch();
   const handleLogout = async () => {
 
