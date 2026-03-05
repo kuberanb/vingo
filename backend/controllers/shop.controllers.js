@@ -45,7 +45,7 @@ export const getCurrentShop = async (req, res) => {
     );
 
     if (!shop) {
-      return null;
+      return res.status(404).json({ message: "Shop not found" });
     }
     return res.status(200).json({ shop });
   } catch (error) {
