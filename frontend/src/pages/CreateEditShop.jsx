@@ -30,6 +30,7 @@ function CreateEditShop() {
             setCity(myShopData.city || "");
             setShopState(myShopData.state || "");
             setAddress(myShopData.address || "");
+            setFrontendImage(myShopData.image || "");
             return;
         }
 
@@ -61,17 +62,13 @@ function CreateEditShop() {
 
             const response = await axios.post(`${serverUrl}/api/shop/create-edit-shop`, formData, { withCredentials: true });
             dispatch(setMyShopData(response.data.shop));
-console.log("handleSubmit:", response.data);
+            console.log("handleSubmit:", response.data);
         } catch (e) {
 
             console.log(`error : ${e}`);
         }
 
-
-
-
-
-    };
+    }
 
     return (
         <div className='flex flex-col   w-full min-h-screen bg-[#fff9f6]'>

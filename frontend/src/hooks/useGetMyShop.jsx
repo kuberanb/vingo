@@ -19,7 +19,7 @@ function useGetMyShop() {
                 );
 
                 console.log("my shop response:", response.data);
-                dispatch(setMyShopData(response.data));
+                dispatch(setMyShopData(response.data.shop));
 
             } catch (error) {
                 console.log("fetch my shop error:", error.response?.data || error.message);
@@ -28,7 +28,7 @@ function useGetMyShop() {
 
         fetchMyshop();
 
-    }, []);
+    }, [dispatch]);
 }
 
 export default useGetMyShop;
