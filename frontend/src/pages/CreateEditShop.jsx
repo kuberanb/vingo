@@ -46,6 +46,7 @@ function CreateEditShop() {
         setBackendImage(file);
         setFrontendImage(URL.createObjectURL(file));
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
