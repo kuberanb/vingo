@@ -25,8 +25,11 @@ export const addItem = async (req, res) => {
       shop: shop._id,
     });
 
-    item.populate("shop");
-    return res.status(201).json({ item });
+    shop.items.push(item._id);
+    await shop.save();
+    await shop.populate("items owner");
+
+    return res.status(201).json({ shop });
   } catch (error) {
     return res.status(500).json({
       message: "Error adding item",
@@ -52,8 +55,8 @@ export const editItem = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
 
-    let item = await Item.findByIdAndUpdate(
-      itemId,
+    let item = await Item.findOneAndUpdate(
+      { _id: itemId, shop: shop._id },
       {
         name,
         category,
@@ -69,8 +72,8 @@ export const editItem = async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    item.populate("shop");
-    return res.status(200).json({ item });
+    await shop.populate("items owner");
+    return res.status(200).json({ shop });
   } catch (error) {
     return res
       .status(500)
