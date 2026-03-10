@@ -63,9 +63,9 @@ function CreateEditShop() {
 
             const response = await axios.post(`${serverUrl}/api/shop/create-edit-shop`, formData, { withCredentials: true });
             dispatch(setMyShopData(response.data.shop));
+            navigate(`/`);
             console.log("handleSubmit:", response.data);
         } catch (e) {
-
             console.log(`error : ${e}`);
         }
 

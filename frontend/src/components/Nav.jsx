@@ -10,6 +10,7 @@ import { serverUrl } from '../App';
 import { setUserData } from '../redux/userSlice';
 import { FaPlus } from "react-icons/fa6";
 import { IoReceipt } from "react-icons/io5";
+import { useNavigate } from 'react-router-dom';
 
 
 function Nav() {
@@ -19,6 +20,7 @@ function Nav() {
   const city = useSelector((state) => state.user.city);
   const myShopData = useSelector((state) => state.owner.myShopData);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleLogout = async () => {
 
     try {
@@ -68,7 +70,7 @@ function Nav() {
 
           {
             userData?.role == "owner" ? <>
-              <button className='cursor-pointer flex items-center gap-2  md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg '  >
+              <button onClick={() => navigate('/add-food-item')} className='   cursor-pointer flex items-center gap-2  md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg  '  >
                 <FaPlus size={20} className='text-[#ff4d2d]' />
                 <span className=' hidden md:flex'>Add Food Item</span>
 

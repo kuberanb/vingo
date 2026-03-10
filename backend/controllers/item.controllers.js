@@ -49,34 +49,70 @@ export const editItem = async (req, res) => {
       image = await uploadOnCloudinary(req.file.path);
     }
 
-    let shop = await Shop.findOne({ owner: req.userId });
+    const shop = await Shop.findOne({ owner: req.userId });
 
     if (!shop) {
-      return res.status(404).json({ message: "Shop not found" });
+      return res.status(404).json({ message: "Shop Not found" });
     }
 
-    let item = await Item.findOneAndUpdate(
-      { _id: itemId, shop: shop._id },
+    const updateData = {
+      name,
+      category,
+      price,
+      foodType,
+    };
+
+    if (image) {
+      updateData.image = image;
+    }
+
+    const item = await Item.findOneAndUpdate(
       {
-        name,
-        category,
-        price,
-        foodType,
-        image,
+        _id: itemId,
         shop: shop._id,
       },
+      updateData,
       { new: true },
     );
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found" });
+      return res.status(404).json({ message: "Item Not Found" });
     }
 
-    await shop.populate("items owner");
-    return res.status(200).json({ shop });
+    const updatedShop = await Shop.findById(shop._id)
+      .populate("owner")
+      .populate({
+        path: "items",
+        options: { sort: { updatedAt: -1 } },
+      });
+
+    return res.status(200).json({ shop: updatedShop });
   } catch (error) {
+    console.log(` Error editing item : ${error}`);
     return res
       .status(500)
       .json({ message: "Error editing item", error: error.message });
+  }
+};
+
+export const getItem = async (req, res) => {
+  const { itemId } = req.params;
+
+  try {
+    let item = await Item.findById(itemId);
+
+    if (!item) {
+      return res.status(404).json({
+        message: "Item Not Found",
+      });
+    }
+
+    return res.status(200).json({
+      item,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `GetItem Error `, error: error.message });
   }
 };

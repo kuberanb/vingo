@@ -9,7 +9,6 @@ import { MdDeleteOutline } from "react-icons/md";
 import OwnerItemCard from './OwnerItemCard';
 
 
-
 function OwnerDashBoard() {
   const myshopData = useSelector((state) => state.owner.myShopData);
   const navigate = useNavigate();
@@ -56,7 +55,7 @@ function OwnerDashBoard() {
             </div>
           </div>
           {
-            myshopData.items.length === 0 ?
+            myshopData?.items?.length === 0 ?
               <div className='mb-4'>
                 <div className='max-w-md w-full bg-white shadow-2xl rounded-2xl t  flex-col flex justify-center items-center p-4 sm:p-6'>
                   <FaUtensils size={60} className=' text-[#ff4d2d] mb-2 ' />
@@ -70,7 +69,7 @@ function OwnerDashBoard() {
               </div> :
 
               <div className='flex flex-col items-center gap-4 w-full max-w-3xl  '>
-                {myshopData.items.map((item, index) => (
+                {myshopData?.items?.map((item, index) => (
                   <OwnerItemCard key={index} data={item} />
                 ))}
               </div>
@@ -110,8 +109,8 @@ function OwnerDashBoard() {
             //   </div>
 
             // </div>
-            
-          //))
+
+            //))
 
 
 

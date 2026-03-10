@@ -3,14 +3,16 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import { FaUtensils } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
-import { serverUrl } from '../App.jsx';
 import axios from 'axios';
-import { setMyShopData } from '../redux/ownerSlice';
+import { setMyShopData } from '../redux/ownerSlice.js';
 import { ClipLoader } from 'react-spinners';
+import { useParams } from 'react-router-dom';
+import { serverUrl } from '../App.jsx';
 
-function AddFoodItem() {
+
+
+function EditFoodItem() {
   const navigate = useNavigate();
-
   const [frontendImage, setFrontendImage] = useState("");
   const [backendImage, setBackendImage] = useState(null);
   const [name, setName] = useState("");
@@ -19,6 +21,37 @@ function AddFoodItem() {
   const [category, setCategory] = useState("");
   const [foodType, setFoodType] = useState("");
   const [loading, setLoading] = useState(false);
+  const { itemId } = useParams();
+
+
+
+  useEffect(() => {
+
+    async function getItem() {
+
+      try {
+        let response = await axios.get(`${serverUrl}/api/item/get-item/${itemId}`, { withCredentials: true });
+
+        const item = response.data.item;
+
+        setName(item.name);
+        setPrice(item.price);
+        setCategory(item.category);
+        setFoodType(item.foodType);
+        setFrontendImage(item.image);
+
+      } catch (error) {
+        console.log(` getItem Exception :  ${error?.message} `);
+      }
+
+
+
+    }
+
+    getItem()
+  }, [itemId])
+
+
 
   const categories = ["Snacks",
     "Main Course",
@@ -62,10 +95,12 @@ function AddFoodItem() {
         formData.append("image", backendImage)
       }
 
-      const response = await axios.post(`${serverUrl}/api/item/create-item`, formData, { withCredentials: true });
+
+      const response = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, { withCredentials: true });
+
       dispatch(setMyShopData(response.data.shop));
       navigate('/');
-      console.log("handleSubmit in add Food Item:", response.data);
+      console.log("handleSubmit in Edit Food Item:", response.data);
 
     } catch (e) {
 
@@ -87,8 +122,8 @@ function AddFoodItem() {
             <FaUtensils size={60} className="text-[#ff4d2d]" />
           </div>
 
-          <div className=' font-black   text-lg mb-2 '>
-            Add Food Item
+          <div className=' font-black text-lg mb-2 '>
+            Edit Food Item
           </div>
 
           <form onSubmit={handleSubmit} action="" >
@@ -156,5 +191,5 @@ function AddFoodItem() {
   )
 }
 
-export default AddFoodItem
+export default EditFoodItem
 

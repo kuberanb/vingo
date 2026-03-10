@@ -12,6 +12,7 @@ import useGetCurrentCity from './hooks/useGetCurrentCity.jsx'
 import useGetMyShop from './hooks/useGetMyShop.jsx'
 import CreateEditShop from './pages/CreateEditShop.jsx'
 import AddFoodItem from './pages/AddFoodItem.jsx'
+import EditFoodItem from './pages/EditFoodItem.jsx'
 
 
 export const serverUrl = "http://localhost:8000";
@@ -32,6 +33,7 @@ function App() {
       <Route path='/forgot-password' element={!userData ? <ForgotPassword /> : <SignIn />} ></Route>
       <Route path='/create-edit-shop' element={userData ? <CreateEditShop /> : <SignIn />} ></Route>
       <Route path='/add-food-item' element={userData ? <AddFoodItem /> : <SignIn />} ></Route>
+      <Route path='/edit-food-item/:itemId' element={userData ? <EditFoodItem /> : <SignIn />}    ></Route>
 
     </Routes>
   )
