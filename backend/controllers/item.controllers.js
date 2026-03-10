@@ -111,8 +111,42 @@ export const getItem = async (req, res) => {
       item,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: `GetItem Error `, error: error.message });
+    return res.status(500).json({ error: error });
+  }
+};
+
+export const deleteItem = async (req, res) => {
+  const { itemId } = req.params;
+
+  try {
+    const shop = await Shop.findOne({ owner: req.userId });
+
+    if (!shop) {
+      return res.status(404).json({ message: "Shop Not Found" });
+    }
+
+    const item = await Item.findOneAndDelete({
+      _id: itemId,
+      shop: shop._id,
+    });
+
+    if (!itemId) {
+      return res.status(404).json({ message: "Item Not found" });
+    }
+
+    shop.items.pull(itemId);
+    await shop.save();
+
+    const updatedShop = await Shop.findById(shop._id)
+      .populate(`owner`)
+      .populate({
+        path: `items`,
+        options: {
+          sort: { updatedAt: -1 },
+        },
+      });
+    return res.status(200).json({ shop: updatedShop });
+  } catch (e) {
+    return res.status(500).json({ error: e });
   }
 };

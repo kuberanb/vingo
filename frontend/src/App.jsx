@@ -23,9 +23,7 @@ function App() {
   useGetMyShop();
   const userData = useSelector((state) => state.user.userData);
 
-
   return (
-
     <Routes>
       <Route path='/' element={!userData ? <SignUp /> : <Home />}></Route>
       <Route path='/signup' element={!userData ? <SignUp /> : <Home />} ></Route>
@@ -34,7 +32,6 @@ function App() {
       <Route path='/create-edit-shop' element={userData ? <CreateEditShop /> : <SignIn />} ></Route>
       <Route path='/add-food-item' element={userData ? <AddFoodItem /> : <SignIn />} ></Route>
       <Route path='/edit-food-item/:itemId' element={userData ? <EditFoodItem /> : <SignIn />}    ></Route>
-
     </Routes>
   )
 }

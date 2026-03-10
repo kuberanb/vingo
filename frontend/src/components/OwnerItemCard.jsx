@@ -2,10 +2,33 @@ import React from 'react'
 import { MdOutlineEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { serverUrl } from '../App';
+import { useDispatch } from 'react-redux';
+import { setMyShopData } from '../redux/ownerSlice';
 
 function OwnerItemCard({ data }) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const  itemId  = data._id;
+
+
+    const handleDelete = async () => {
+        try {
+
+            let response = await axios.delete(`${serverUrl}/api/item/item/${itemId}`, { withCredentials: true });
+
+            dispatch(setMyShopData(response.data.shop));
+
+        } catch (error) {
+            console.log(`handleDelete exception : ${error}`);
+        }
+
+
+    }
+
     return (
+
         <div className="flex w-[80%] max-w-lg  border rounded-lg border-[#ff4d2d] bg-white shadow-lg overflow-hidden mb-2">
 
             <div className='  w-27.5  shrink-0 '>
@@ -27,7 +50,7 @@ function OwnerItemCard({ data }) {
 
                     <div className=' flex gap-2'>
                         <MdOutlineEdit onClick={() => navigate(`/edit-food-item/${data._id}`)} size={25} className='text-[#ff4d2d]  cursor-pointer hover:bg-gray-100 p-0.5 rounded-full' />
-                        <MdDeleteOutline size={25} className='text-[#ff4d2d]  cursor-pointer hover:bg-gray-100 p-0.5 rounded-full' />
+                        <MdDeleteOutline onClick={handleDelete} size={25} className='text-[#ff4d2d]  cursor-pointer hover:bg-gray-100 p-0.5 rounded-full' />
 
                     </div>
 
