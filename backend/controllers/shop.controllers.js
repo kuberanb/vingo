@@ -54,3 +54,27 @@ export const getCurrentShop = async (req, res) => {
       .json({ message: `Error getting current shop : ${error.message}` });
   }
 };
+
+export const getShops = async (req, res) => {
+  const { city } = req.query;
+
+  try {
+    let query = {};
+
+    if (city) {
+      query.city = city.toLowerCase();
+    }
+
+    const shopList = await Shop.find(query).populate("items");
+
+    if (shopList.length === 0) {
+      return res.status(404).json({ message: "No Shops Found" });
+    }
+
+    return res.status(200).json(shopList);
+  } catch (error) {
+    return res.status(500).json({
+      message: `Error getting shops : ${error.message}`,
+    });
+  }
+};

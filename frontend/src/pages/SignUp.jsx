@@ -99,7 +99,7 @@ function SignUp() {
       setError("");
 
     } catch (error) {
-      setError(`${error.response.data.message}`);
+      setError(`${error?.response?.data?.message}`);
 
       console.log("Google Auth Backend Error:", error);
 
