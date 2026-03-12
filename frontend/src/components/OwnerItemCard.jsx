@@ -24,7 +24,6 @@ function OwnerItemCard({ data }) {
             console.log(`handleDelete exception : ${error}`);
         }
 
-
     }
 
     return (
