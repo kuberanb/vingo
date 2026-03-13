@@ -6,6 +6,7 @@ import { FaChevronCircleLeft } from "react-icons/fa";
 import { FaChevronCircleRight } from "react-icons/fa";
 import { useSelector } from 'react-redux';
 import { scrollLeft, scrollRight, checkScroll } from "../utils/scrollUtils";
+import FoodCard from './FoodCard';
 
 
 function UserDashBoard() {
@@ -19,6 +20,8 @@ function UserDashBoard() {
 
   const currentCity = useSelector((state) => state.user.city);
   const shopsInMyCity = useSelector((state) => state.user.shopsInMyCity);
+  const itemsInMyCity = useSelector((state) => state.user.itemsInMyCity);
+
 
   useEffect(() => {
     checkScroll(catRef, setLeftCat, setRightCat);
@@ -81,6 +84,16 @@ function UserDashBoard() {
 
         }
         <h1 className='text-gray-800 text-2xl sm:text-3xl' >Suggetsed Food Items</h1>
+
+
+        <div className='w-full '>
+
+          <div
+            className='w-full flex flex-row gap-4 pb-2 overflow-x-auto' >
+            {itemsInMyCity?.map((value, index) => <FoodCard data={value} key={index} />)}
+          </div>
+
+        </div>
 
 
 

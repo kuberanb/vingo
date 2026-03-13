@@ -150,3 +150,29 @@ export const deleteItem = async (req, res) => {
     return res.status(500).json({ error: e });
   }
 };
+
+export const getItemsByCity = async (req, res) => {
+  try {
+    const { city } = req.query;
+
+    const shopList = await Shop.find({ city }).populate("items");
+
+    if (!shopList || shopList.length === 0) {
+      return res.status(200).json({ message: "No Shop in the city" });
+    }
+
+    let itemsList = [];
+
+    shopList.forEach((shop) => {
+      itemsList.push(...shop.items);
+    });
+
+    if (!itemsList || itemsList.length === 0) {
+      return res.status(404).json({ message: "No Food Items in the City" });
+    }
+
+    return res.status(200).json({ itemsList });
+  } catch (error) {
+    return res.status(500).json({ message: `getItems error : ${error}` });
+  }
+};

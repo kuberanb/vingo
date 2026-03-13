@@ -1,4 +1,5 @@
 
+
 import React from 'react'
 import { Routes } from 'react-router-dom'
 import { Route } from 'react-router-dom'
@@ -14,8 +15,7 @@ import CreateEditShop from './pages/CreateEditShop.jsx'
 import AddFoodItem from './pages/AddFoodItem.jsx'
 import EditFoodItem from './pages/EditFoodItem.jsx'
 import useGetShopByCity from './hooks/useGetShopByCity.jsx'
-
-
+import useGetItemsByCity from './hooks/useGetItemsByCity.jsx'
 export const serverUrl = "http://localhost:8000";
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
   useGetCurrentCity();
   useGetMyShop();
   useGetShopByCity();
+  useGetItemsByCity();
   const userData = useSelector((state) => state.user.userData);
 
   return (
