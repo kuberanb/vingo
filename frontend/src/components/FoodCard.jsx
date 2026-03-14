@@ -6,60 +6,91 @@ import { FaStar } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { LuMinus } from "react-icons/lu";
 import { FaShoppingCart } from "react-icons/fa";
+import { useState } from 'react';
+import { FaLeaf } from "react-icons/fa";
+import { FaDrumstickBite } from "react-icons/fa";
+
 
 
 function FoodCard({ data }) {
+    const [foodCount, setFoodCount] = useState(0);
+
+    const increaseFoodCount = () => {
+        setFoodCount(foodCount + 1);
+    }
+    const decreaseFoodCount = () => {
+        if (foodCount > 1) {
+            setFoodCount(foodCount - 1);
+
+        }
+    }
 
     function starRating({ rating }) {
         return (<div className='flex gap-1'>
 
             {
-                Array.from({ length: 5 }, (_, index) => {
-                    index <= rating ? (<FaStar className='text-yellow-300' key={index} />
+                Array.from({ length: 5 }, (_, index) =>
+                    index < rating ? (<FaStar className='text-yellow-300' key={index} />
                     ) : (
                         <FaRegStar className='text-yellow-500' key={index} />
 
                     )
-                })
+                )
             }
 
         </div>);
 
-
     }
-
-
 
 
     return (
         <div className=' flex flex-col w-60 relative  rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-xl  '>
 
-            <div className=' h-40 w-60'>
-                <img src={data.image} alt="w-full object-cover h-full" />
-            </div>
-            <div className='flex flex-col w-full'>
-                <div className='text-black '>{data.name}</div>
-                <div className='flex'  >
-                    {starRating(4)}
-                    {data.averageRating}
-                </div>
-                <div className='w-full p-2' >
-                    <div className='text-black'>
-                        199
+            <div className=' h-40 w-60 relative'>
+                <img src={data.image} alt="w-full object-cover h-full " />
+                {
+                    data.foodType === "Veg" && (
+                        <div className="absolute top-4 right-4 m-2 w-7 h-7 flex items-center justify-center rounded-full bg-white">
+                            <FaLeaf size={14} className="text-green-500" />
+                        </div>
+                    )
+                }
+                {
+                    data.foodType == "Non-Veg" &&
+                    <div className="absolute top-4 right-4 m-2 w-7 h-7 flex items-center justify-center rounded-full bg-white">
+                        <FaDrumstickBite size={20} className='text-red-500   top-4 right-4 absolute' />
+
                     </div>
-                    <div className=' flex rounded-2xl items-center '>
-                        <LuMinus className='text-black cursor-pointer' />
-                        <div className='text-black'>0</div>
 
-                        <IoMdAdd className='text-black cursor-pointer' />
 
-                        <div className='bg-[#ff4d2d] cursor-pointer '>
-                            <FaShoppingCart className='text-white' />
 
+                }
+
+            </div>
+            <div className='flex flex-col w-full p-4'>
+                <div className='text-black font-semibold '>{data.name}</div>
+                <div className='flex w-full  justify-start items-center gap-1 mb-2'  >
+                    {starRating({ rating: data.rating.count })}
+                    {data.rating.average}
+                </div>
+                <div className='w-full flex flex-row justify-between' >
+                    <div className='text-black font-semibold'>
+                        ₹ {data.price}
+                    </div>
+                    <div className=' flex rounded-2xl items-center justify-between border '>
+
+                        <div className='flex items-center px-2 gap-1 '>
+                            <LuMinus size={20} onClick={decreaseFoodCount} className='text-black cursor-pointer font-semibold hover:bg-gray-300 hover:rounded-full' />
+                            <div className='text-black font-semibold'>{foodCount}</div>
+
+                            <IoMdAdd onClick={increaseFoodCount} size={20} className='text-black cursor-pointer font-semibold hover:bg-gray-300 hover:rounded-full ' />
+                        </div>
+
+                        <div className=' cursor-pointer flex h-full px-2 rounded-r-2xl bg-[#ff4d2d]  '>
+                            <FaShoppingCart size={15} className='text-white font-semibold m-1 hover:scale-110 transition-transform duration-300 ' />
                         </div>
 
                     </div>
-
 
                 </div>
 

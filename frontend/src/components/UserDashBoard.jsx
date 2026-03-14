@@ -89,7 +89,7 @@ function UserDashBoard() {
         <div className='w-full '>
 
           <div
-            className='w-full flex flex-row gap-4 pb-2 overflow-x-auto' >
+            className='w-full h-auto flex flex-wrap  justify-center  gap-4 pb-2 overflow-x-auto' >
             {itemsInMyCity?.map((value, index) => <FoodCard data={value} key={index} />)}
           </div>
 

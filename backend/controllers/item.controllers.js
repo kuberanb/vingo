@@ -155,7 +155,7 @@ export const getItemsByCity = async (req, res) => {
   try {
     const { city } = req.query;
 
-    const shopList = await Shop.find({ city }).populate("items");
+    const shopList = await Shop.find({  }).populate("items");
 
     if (!shopList || shopList.length === 0) {
       return res.status(200).json({ message: "No Shop in the city" });
