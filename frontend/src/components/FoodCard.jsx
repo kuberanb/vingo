@@ -9,15 +9,27 @@ import { FaShoppingCart } from "react-icons/fa";
 import { useState } from 'react';
 import { FaLeaf } from "react-icons/fa";
 import { FaDrumstickBite } from "react-icons/fa";
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/userSlice'
+import { useEffect } from 'react';
 
 
 
 function FoodCard({ data }) {
-    const [foodCount, setFoodCount] = useState(0);
-
+    const [foodCount, setFoodCount] = useState(1);
+    const dispatch = useDispatch();
+    const { cartItems } = useSelector((state) => state.user);
+    const isInCart = cartItems.find((item) => item.id === data._id)
+    // useEffect(() => {
+    //     if (isInCart) {
+    //         setFoodCount(isInCart.quantity);
+    //     }
+    // }, [isInCart]);
     const increaseFoodCount = () => {
         setFoodCount(foodCount + 1);
     }
+
+
     const decreaseFoodCount = () => {
         if (foodCount > 1) {
             setFoodCount(foodCount - 1);
@@ -63,7 +75,6 @@ function FoodCard({ data }) {
                     </div>
 
 
-
                 }
 
             </div>
@@ -86,8 +97,26 @@ function FoodCard({ data }) {
                             <IoMdAdd onClick={increaseFoodCount} size={20} className='text-black cursor-pointer font-semibold hover:bg-gray-300 hover:rounded-full ' />
                         </div>
 
-                        <div className=' cursor-pointer flex h-full px-2 rounded-r-2xl bg-[#ff4d2d]  '>
-                            <FaShoppingCart size={15} className='text-white font-semibold m-1 hover:scale-110 transition-transform duration-300 ' />
+                        <div className={` cursor-pointer flex h-full px-2 rounded-r-2xl ${isInCart ? 'bg-gray-500' : 'bg-[#ff4d2d]'}        `}>
+                            <FaShoppingCart onClick={
+
+                                () => {
+                                    dispatch(addToCart({
+                                        id: data._id,
+                                        name: data.name,
+                                        price: data.price,
+                                        image: data.image,
+                                        shop: data.shop,
+                                        quantity: foodCount,
+                                        foodType: data.foodType
+                                    }
+                                    ));
+
+                                    setFoodCount(1);
+
+                                }
+                            } size={15} className={`  text-white font-semibold m-1 hover:scale-110 transition-transform duration-300 `}
+                            />
                         </div>
 
                     </div>

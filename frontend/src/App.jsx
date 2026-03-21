@@ -16,6 +16,8 @@ import AddFoodItem from './pages/AddFoodItem.jsx'
 import EditFoodItem from './pages/EditFoodItem.jsx'
 import useGetShopByCity from './hooks/useGetShopByCity.jsx'
 import useGetItemsByCity from './hooks/useGetItemsByCity.jsx'
+import CartPage from './pages/CartPage.jsx'
+import CheckOutPage from './pages/CheckOutPage.jsx'
 export const serverUrl = "http://localhost:8000";
 
 function App() {
@@ -35,6 +37,10 @@ function App() {
       <Route path='/create-edit-shop' element={userData ? <CreateEditShop /> : <SignIn />} ></Route>
       <Route path='/add-food-item' element={userData ? <AddFoodItem /> : <SignIn />} ></Route>
       <Route path='/edit-food-item/:itemId' element={userData ? <EditFoodItem /> : <SignIn />}    ></Route>
+      <Route path='/cart' element={userData ? <CartPage /> : <SignIn />}    ></Route>
+      <Route path='/checkout' element={userData ? <CheckOutPage /> : <SignIn />}    ></Route>
+
+
     </Routes>
   )
 }
