@@ -181,7 +181,6 @@ function EditFoodItem() {
 
               }
 
-
             </button>
           </form>
         </div>

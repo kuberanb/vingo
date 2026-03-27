@@ -20,6 +20,7 @@ import CartPage from './pages/CartPage.jsx'
 import CheckOutPage from './pages/CheckOutPage.jsx'
 import MyOrders from './pages/MyOrders.jsx'
 import OrderSucessPage from './pages/OrderSucessPage.jsx'
+import useGetMyOrders from './hooks/useGetMyOrders.jsx'
 export const serverUrl = "http://localhost:8000";
 
 function App() {
@@ -28,6 +29,8 @@ function App() {
   useGetMyShop();
   useGetShopByCity();
   useGetItemsByCity();
+  useGetMyOrders();
+
   const userData = useSelector((state) => state.user.userData);
 
   return (

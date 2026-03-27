@@ -13,8 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/userSlice'
 import { useEffect } from 'react';
 
-
-
 function FoodCard({ data }) {
     const [foodCount, setFoodCount] = useState(1);
     const dispatch = useDispatch();

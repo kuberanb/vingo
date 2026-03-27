@@ -91,24 +91,36 @@ export const getOrders = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
     if (user.role === "user") {
-      const userOrders = await Order.find({ user: req.userId }).populate([
-        { path: "user" },
-        { path: "shopOrder.shop" },
-        { path: "shopOrder.shopOrderItems.item" },
-      ]);
+      const userOrders = await Order.find({ user: req.userId })
+        .sort({ createdAt: -1 })
+        .populate([
+          { path: "user" },
+          { path: "shopOrder.shop" },
+          { path: "shopOrder.shopOrderItems.item" },
+        ]);
 
       return res.status(200).json(userOrders);
     } else if (user.role === "owner") {
       const ownerOrders = await Order.find({
-        "shopOrder.shop": req.userId,
-      }).populate([
-        { path: "user" },
-        { path: "shopOrder.shop" },
-        { path: "shopOrder.shopOrderItems.item" },
-      ]);
+        "shopOrder.owner": req.userId,
+      })
+        .sort({ createdAt: -1 })
+        .populate([
+          { path: "user" },
+          { path: "shopOrder.shop" },
+          { path: "shopOrder.shopOrderItems.item" },
+        ]);
 
-      return res.status(200).json(ownerOrders);
+      const filteredOrders = ownerOrders.map((order) => {
+        order.shopOrder = order.shopOrder.filter((shop) =>
+          shop.owner.equals(req.userId),
+        );
+        return order;
+      });
+
+      return res.status(200).json(filteredOrders);
     }
+    return null;
   } catch (error) {
     return res.status(500).json({ message: `getOrders error : ${error}` });
   }
