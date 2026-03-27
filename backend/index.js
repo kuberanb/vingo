@@ -8,6 +8,7 @@ import userRouter from "./routes/user.routes.js";
 import cors from "cors";
 import shopRouter from "./routes/shop.routes.js";
 import itemRouter from "./routes/item.routes.js";
+import orderRouter from "./routes/order.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter);
+app.use("/api/order", orderRouter);
 
 const port = process.env.PORT || 5000;
 

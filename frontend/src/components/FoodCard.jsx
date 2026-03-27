@@ -56,10 +56,11 @@ function FoodCard({ data }) {
 
 
     return (
-        <div className=' flex flex-col w-60 relative  rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-xl  '>
+        <div className=' flex flex-col w-60 overflow-hidden relative  rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-xl  '>
 
             <div className=' h-40 w-60 relative'>
-                <img src={data.image} alt="w-full object-cover h-full " />
+                <img src={data.image} alt={data.name}
+                    className="w-full object-cover h-full " />
                 {
                     data.foodType === "Veg" && (
                         <div className="absolute top-4 right-4 m-2 w-7 h-7 flex items-center justify-center rounded-full bg-white">

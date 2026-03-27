@@ -15,6 +15,8 @@ import axios from 'axios';
 import { MdOutlineTwoWheeler } from "react-icons/md";
 import { FaMobileAlt } from "react-icons/fa";
 import { FaCreditCard } from "react-icons/fa";
+import { serverUrl } from '../App';
+import { ClipLoader } from 'react-spinners';
 
 function RecenterMap({ location }) {
     const map = useMap();
@@ -35,7 +37,8 @@ function CheckOutPage() {
     const { location, address } = useSelector((state) => state.map);
     const { cartItems, totalAmount } = useSelector((state) => state.user);
     const [addressInput, setAddressInput] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('cod');
+    const [loading, setLoading] = useState(false);
 
     const onDragEnd = (e) => {
         console.log(e.target.getLatLng())
@@ -99,6 +102,36 @@ function CheckOutPage() {
     const subTotal = totalAmount;
     const deliveryFree = totalAmount > 500 ? 0 : 40;
     const totalAmountWithDeliveryFee = subTotal + deliveryFree;
+
+
+
+    const handlePlaceOrder = async () => {
+
+        setLoading(true);
+
+        try {
+            const response = await axios.post(`${serverUrl}/api/order/place-order`, {
+                paymentMethod: paymentMethod,
+                deliveryAddress: {
+                    text: addressInput,
+                    lattitude: location?.lat,
+                    longitude: location?.long
+                },
+                cartItems: cartItems,
+                // totalAmount: totalAmount,
+            }, { withCredentials: true });
+
+            console.log(`handlePlaceOrder response : ${response}  `)
+
+            navigate('/order-sucess')
+
+        } catch (error) {
+            console.log(`place order error : ${error}`);
+        } finally {
+            setLoading(false);
+
+        }
+    }
 
     return (
         <div className='w-full min-h-screen bg-[#fff9f6]'>
@@ -220,7 +253,14 @@ function CheckOutPage() {
                         </div>
                     </section>
                     <div className='w-full flex justify-center mb-2'>
-                        <button className=' w-full text-white font-bold shadow-2xs bg-[#ff4d2d] rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105 cursor-pointer'>{paymentMethod === "cod" ? "Place Order" : "Pay & Place Order"}</button>
+                        <button onClick={handlePlaceOrder} disabled={loading} className=' w-full text-white font-bold shadow-2xs bg-[#ff4d2d] rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105 cursor-pointer'>
+
+                            {
+                                loading ? <ClipLoader size={20} color="#fff" /> :
+                                    (paymentMethod === "cod" ? "Place Order" : "Pay & Place Order")
+                            }
+
+                        </button>
                     </div>
 
                 </div>

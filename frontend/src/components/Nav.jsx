@@ -76,7 +76,7 @@ function Nav() {
                 <span className=' hidden md:flex'>Add Food Item</span>
 
               </button>
-              <button className='flex items-center gap-2 cursor-pointer  bg-[#ff4d2d]/10 px-4 py-2 rounded-lg relative'>
+              <button onClick={() => navigate('/my-orders')} className='flex items-center gap-2 cursor-pointer  bg-[#ff4d2d]/10 px-4 py-2 rounded-lg relative'>
                 <IoReceipt size={20} className=' text-[#ff4d2d] ' />
                 <span className='hidden md:flex  text-[#ff4d2d]  '>My Orders</span>
                 <span className='absolute -top-3 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center font-bold justify-center text-xs'>0</span>
@@ -93,7 +93,7 @@ function Nav() {
                 <MdOutlineShoppingCart className='' size={30} />
                 <p className=' absolute -top-2.5 right-5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs' >{cartItemsLength}</p>
               </div>
-              <button className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
+              <button onClick={() => navigate('/my-orders')} className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
 
             </>)
 
@@ -111,7 +111,7 @@ function Nav() {
             <p className="px-4 py-2 text-sm border-b">
               {userData?.fullName}
             </p>
-            <button className=" md:hidden w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+            <button onClick={() => navigate('/my-orders')} className=" md:hidden w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
               My Orders
             </button>
             <button onClick={handleLogout} className=" w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100">

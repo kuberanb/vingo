@@ -1,6 +1,6 @@
-import Order from "../models/order.model";
-import Shop from "../models/shop.model";
-import User from "../models/user.model";
+import Order from "../models/order.model.js";
+import Shop from "../models/shop.model.js";
+import User from "../models/user.model.js";
 
 export const placeOrder = async (req, res) => {
   try {
@@ -34,6 +34,10 @@ export const placeOrder = async (req, res) => {
     const shopOrders = await Promise.all(
       Object.keys(groupItemsbyShop).map(async (shopId) => {
         const shop = await Shop.findById(shopId).populate("owner");
+        if (!shop) {
+          return res.status(400).json({ message: "Shop not found" });
+        }
+
         const items = groupItemsbyShop[shopId];
 
         const shopOrderItems = items.map((i) => ({
@@ -43,7 +47,7 @@ export const placeOrder = async (req, res) => {
         }));
 
         const subTotal = items.reduce((sum, i) => {
-          return sum + i.price * i.quantity;
+          return sum + Number(i.price) * Number(i.quantity);
         }, 0);
 
         return {
@@ -55,8 +59,8 @@ export const placeOrder = async (req, res) => {
       }),
     );
 
-    const totalAmount = shopOrders.reduce((sum, shop) => {
-      return sum + shop.subTotal;
+    const totalAmount = shopOrders.reduce((sum, i) => {
+      return sum + Number(i.subTotal);
     }, 0);
 
     const order = await Order.create({

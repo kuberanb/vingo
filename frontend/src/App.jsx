@@ -18,6 +18,8 @@ import useGetShopByCity from './hooks/useGetShopByCity.jsx'
 import useGetItemsByCity from './hooks/useGetItemsByCity.jsx'
 import CartPage from './pages/CartPage.jsx'
 import CheckOutPage from './pages/CheckOutPage.jsx'
+import MyOrders from './pages/MyOrders.jsx'
+import OrderSucessPage from './pages/OrderSucessPage.jsx'
 export const serverUrl = "http://localhost:8000";
 
 function App() {
@@ -39,7 +41,8 @@ function App() {
       <Route path='/edit-food-item/:itemId' element={userData ? <EditFoodItem /> : <SignIn />}    ></Route>
       <Route path='/cart' element={userData ? <CartPage /> : <SignIn />}    ></Route>
       <Route path='/checkout' element={userData ? <CheckOutPage /> : <SignIn />}    ></Route>
-
+      <Route path='/my-orders' element={userData ? <MyOrders /> : <SignIn />}    ></Route>
+      <Route path='/order-sucess' element={userData ? <OrderSucessPage /> : <SignIn />}    ></Route>
 
     </Routes>
   )
