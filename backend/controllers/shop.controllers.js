@@ -62,13 +62,13 @@ export const getShops = async (req, res) => {
     let query = {};
 
     if (city) {
-      query.city = city.toLowerCase();
+      query.city = { $regex: `^${city.trim()}$`, $options: "i" };
     }
 
     const shopList = await Shop.find(query).populate("items");
 
     if (shopList.length === 0) {
-      return res.status(404).json({ message: "No Shops Found" });
+      return res.status(200).json(shopList);
     }
 
     return res.status(200).json(shopList);

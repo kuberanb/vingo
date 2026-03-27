@@ -73,7 +73,7 @@ function UserDashBoard() {
               }
               <div ref={shopRef} onScroll={() => checkScroll(shopRef, setLeftShop, setRightCat)}
                 className='w-full flex flex-row gap-4 pb-2 overflow-x-auto' >
-                {shopsInMyCity?.map((value, index) => <CategoryCard name={shopsInMyCity?.name} imageUrl={shopsInMyCity?.image} key={index} />)}
+                {shopsInMyCity?.map((value, index) => <CategoryCard name={value?.name} imageUrl={value?.image} key={index} />)}
               </div>
               {
                 rightShop && <button onClick={() => scrollRight(shopRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-[#ff4d2d]'>

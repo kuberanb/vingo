@@ -17,7 +17,7 @@ function useGetShopByCity() {
 
             try {
 
-                const response = await axios.get(`${serverUrl}/shops`, { withCredentials: true, params: { city: currentCity } });
+                const response = await axios.get(`${serverUrl}/api/shop/shops`, { withCredentials: true, params: { city: currentCity } });
 
                 dispatch(setShopInMyCity(response.data))
 
