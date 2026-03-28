@@ -26,9 +26,9 @@ function MyOrders() {
                 </h1>
             </div>
 
-            <div className='w-full h-full'>
+            <div className='w-full h-full flex items-center justify-center'>
 
-                <div className=' w-full max-w-200 p-4 flex '>
+                <div className=' w-full max-w-200 p-4 '>
                     <div className='space-y-6'>
                         {
 
