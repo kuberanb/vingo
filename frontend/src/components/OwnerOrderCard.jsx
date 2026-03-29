@@ -1,8 +1,30 @@
 
+import axios from 'axios';
 import React from 'react'
 import { FaPhoneAlt } from "react-icons/fa";
+import { serverUrl } from '../App';
+import { useDispatch } from 'react-redux';
+import { updateOrderStatus } from '../redux/userSlice';
 
 function OwnerOrderCard({ data }) {
+  const dispatch = useDispatch();
+
+  const handleUpdateStatus = async (orderId, shopId, status) => {
+    try {
+
+      const repsonse = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, { status }, { withCredentials: true });
+
+      console.log(`ghhhg : `, repsonse.data);
+
+    } catch (error) {
+      console.log(`handleUpdateStatus error ${error}`)
+    }
+
+
+  }
+
+
+
   return (
     <div className='bg-white rounded-lg shadow p-4 space-y-1 flex flex-col items-start' >
       <h1 className='text-black font-semibold text-xl' >
@@ -36,17 +58,24 @@ function OwnerOrderCard({ data }) {
         <div className='font-semibold'>status: <span className='text-[#ff4d2d]'>{data.shopOrder[0].status}</span></div>
         <select
           className="border border-[#ff4d2d] text-[#ff4d2d] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#ff4d2d]"
-          defaultValue="pending"
+          value={data.shopOrder[0].status} onChange={(e) => {
+            handleUpdateStatus(data._id, data.shopOrder[0].shop._id, e.target.value)
+            dispatch(updateOrderStatus({
+              orderId: data._id,
+              shopId: data.shopOrder[0].shop._id,
+              status: e.target.value
+            }))
+          }}
         >
+          <option value="">Change</option>
           <option value="pending">Pending</option>
           <option value="preparing">Preparing</option>
-          <option value="out_of_delivery">Out for Delivery</option>
-          <option value="delivered">Delivered</option>
+          <option value="out of delivery">Out for Delivery</option>
         </select>
       </div>
       <hr className=' mb-2 ' />
       <div className='flex justify-end w-full'>
-        <div className='mb-2 text-black font-bold'>Total : <span>₹{data.totalAmount}</span></div>
+        <div className='mb-2 text-black font-bold'>Total : <span>₹{data.shopOrder[0].subTotal}</span></div>
       </div>
     </div>
   )

@@ -17,6 +17,7 @@ import { FaMobileAlt } from "react-icons/fa";
 import { FaCreditCard } from "react-icons/fa";
 import { serverUrl } from '../App';
 import { ClipLoader } from 'react-spinners';
+import { addMyOrder } from '../redux/userSlice';
 
 function RecenterMap({ location }) {
     const map = useMap();
@@ -122,6 +123,7 @@ function CheckOutPage() {
             }, { withCredentials: true });
 
             console.log(`handlePlaceOrder response : ${response}  `)
+            dispatch(addMyOrder(response.data))
 
             navigate('/order-sucess')
 
