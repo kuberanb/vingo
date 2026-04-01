@@ -145,7 +145,10 @@ export const updateOrderStatus = async (req, res) => {
 
     shopOrder.status = status;
 
-    //  await shopOrder.save();
+    if (status == "out of delivery" || !shopOrder.assignment) {
+
+      
+    }
 
     await order.save();
 
@@ -153,8 +156,7 @@ export const updateOrderStatus = async (req, res) => {
 
     await order.populate("shopOrder.shopOrderItems.item", "name image price");
 
-    return res.status(200).json(order)
-
+    return res.status(200).json(order);
   } catch (error) {
     return res
       .status(500)

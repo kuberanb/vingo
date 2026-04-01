@@ -21,10 +21,12 @@ import CheckOutPage from './pages/CheckOutPage.jsx'
 import MyOrders from './pages/MyOrders.jsx'
 import OrderSucessPage from './pages/OrderSucessPage.jsx'
 import useGetMyOrders from './hooks/useGetMyOrders.jsx'
+import useUpdateLocation from './hooks/useUpdateLocation.jsx'
 export const serverUrl = "http://localhost:8000";
 
 function App() {
   useGetCurentUser();
+  useUpdateLocation();
   useGetCurrentCity();
   useGetMyShop();
   useGetShopByCity();
