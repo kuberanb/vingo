@@ -19,6 +19,7 @@ function Nav() {
   const userData = useSelector((state) => state.user.userData);
   const city = useSelector((state) => state.user.city);
   const cartItemsLength = useSelector((state) => state.user.cartItems.length || 0);
+  // const myOrdersLength = useSelector( (state)=> state.user.myOrders.lentgh || 0  )
   const myShopData = useSelector((state) => state.owner.myShopData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ function Nav() {
               <button onClick={() => navigate('/my-orders')} className='flex items-center gap-2 cursor-pointer  bg-[#ff4d2d]/10 px-4 py-2 rounded-lg relative'>
                 <IoReceipt size={20} className=' text-[#ff4d2d] ' />
                 <span className='hidden md:flex  text-[#ff4d2d]  '>My Orders</span>
-                <span className='absolute -top-3 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center font-bold justify-center text-xs'>0</span>
+                {/* <span className='absolute -top-3 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center font-bold justify-center text-xs'>{myOrdersLength}</span> */}
               </button>
 
             </> : (<>

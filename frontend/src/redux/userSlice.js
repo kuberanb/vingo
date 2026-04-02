@@ -86,15 +86,20 @@ const userSlice = createSlice({
       state.myOrders = [action.payload, ...state.myOrders];
     },
     updateOrderStatus: (state, action) => {
-      const { orderId, shopId, status } = action.payload;
+      const { orderId, shopId, shopOrder: updatedShopOrder, status } =
+        action.payload;
 
       const order = state.myOrders.find((o) => o._id === orderId);
 
       if (!order) return;
 
-      const shopOrder = order.shopOrder?.find((so) => so.shop?._id === shopId);
+      const shopOrder = order.shopOrder?.find(
+        (so) => String(so.shop?._id || so.shop) === shopId,
+      );
 
-      if (shopOrder) {
+      if (shopOrder && updatedShopOrder) {
+        Object.assign(shopOrder, updatedShopOrder);
+      } else if (shopOrder) {
         shopOrder.status = status;
       }
     },

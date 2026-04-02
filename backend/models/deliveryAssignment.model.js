@@ -4,7 +4,7 @@ const deliveryAssignmentSchema = new mongoose.Schema(
   {
     order: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Order",
     },
     shop: {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,9 +34,9 @@ const deliveryAssignmentSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const DeliverAssignment = mongoose.model(
+const DeliveryAssignment = mongoose.model(
   "DeliveryAssignment",
   deliveryAssignmentSchema,
 );
 
-export default DeliverAssignment;
+export default DeliveryAssignment;

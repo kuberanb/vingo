@@ -142,7 +142,7 @@ function SignIn() {
           className="w-full py-2 px-4 rounded-md font-semibold text-white transition-colors"
           style={{ backgroundColor: primaryColor }}
         >
-          {loading ? <ClipLoader size={20} color="#ffffff" /> : "Sign Up"}
+          {loading ? <ClipLoader size={20} color="#ffffff" /> : "Sign In"}
         </button>
 
         {/* Google Sign In */}
