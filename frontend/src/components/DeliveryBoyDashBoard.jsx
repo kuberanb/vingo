@@ -1,9 +1,84 @@
 
 import React from 'react'
+import Nav from './Nav'
+import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import axios from 'axios'
+import { serverUrl } from '../App'
+import { useState } from 'react'
 
 function DeliveryBoyDashBoard() {
+
+    const { userData } = useSelector((state) => state.user)
+    const [availableAssignments, setAvailableAssignments] = useState([]);
+
+    const getAssignments = async () => {
+
+        try {
+
+            const result = await axios.get(`${serverUrl}/api/order/get-assignments`, { withCredentials: true });
+            console.log(result.data);
+            setAvailableAssignments(result.data);
+
+        } catch (e) {
+            console.log(`getAssignments error : ${e}`);
+        }
+
+    }
+
+    useEffect(() => {
+
+        getAssignments();
+
+
+    }, [userData]);
+
+
     return (
-        <div>DeliveryBoyDashBoard</div>
+        <div className='flex flex-col w-full min-h-screen gap-5 items-center bg-[#fff9f6] overflow-y-auto'>
+            <Nav />
+            <div className='w-full max-w-2xl flex flex-col gap-5 items-start p-2.5 ' >
+                <div className='w-full shadow rounded-xl px-2 py-2 flex flex-col items-center justify-center gap-2 bg-white mb-2 text-center'>
+                    <div className='font-semibold text-2xl text-[#ff4d2d]'>Welcome, {userData.fullName}</div>
+                    <div className='font-semibold text-xs text-[#ff4d2d]'>Lattitude :  <span className=' font-semibold'>{userData.location.coordinates[1]}</span>  Longitude : <span className='font-semibold'>{userData.location.coordinates[0]}</span></div>
+                </div>
+
+                <div className='w-full shadow rounded-xl px-4 py-4 flex flex-col items-start justify-center gap-2 bg-white mb-2'>
+                    <h1 className='text-lg font-bold mb-4 flex items-center gap-2  '>Available Orders</h1>
+                    <div className="space-y-4 w-full">
+                        {availableAssignments.length > 0 ? (
+                            availableAssignments.map((a, index) => {
+                                return (
+                                    <div
+                                        key={index}
+                                        className="border rounded-lg p-4 flex flex-col items-center text-center sm:flex-row sm:justify-between sm:items-center sm:text-left w-full gap-3"
+                                    >
+                                        <div className="flex flex-col">
+                                            <div className="font-semibold text-black">{a.shopName}</div>
+                                            <div className="text-xs text-gray-700">{a.deliveryAddress.text}</div>
+                                            <div className="text-xs text-gray-900">
+                                                {a.items.length} items | ₹{a.subTotal}
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            className="px-4 py-2 rounded-lg bg-[#ff4d2d] text-white font-semibold
+               transform transition-transform duration-200 hover:scale-110 cursor-pointer" 
+                                        >
+                                            Accept
+                                        </button>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="text-gray-800 text-[12px]">No Available Orders</div>
+                        )}
+                    </div>
+                </div>
+
+
+            </div>
+        </div >
     )
 }
 

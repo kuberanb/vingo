@@ -1,7 +1,7 @@
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
-import DeliveryAssignment from "../models/deliveryAssignment.model.js";
+import DeliveryAssignment from "../models/deliveryassignment.model.js";
 
 const ORDER_STATUSES = ["pending", "preparing", "out of delivery", "delivered"];
 
@@ -243,5 +243,37 @@ export const updateOrderStatus = async (req, res) => {
     return res
       .status(500)
       .json({ message: `updateOrderStatus error ${error} ` });
+  }
+};
+
+export const getDeliveryBoyAssignment = async (req, res) => {
+  try {
+    const deliveryBoyId = req.userId;
+
+    const assignments = await DeliveryAssignment.find({
+      broadcastedTo: deliveryBoyId,
+      status: "brodcasted",
+    }).sort({ createdAt: -1 })
+      .populate("order")
+      .populate("shop");
+
+    const formatted = assignments.map((a) => {
+      const shopOrder = a.order?.shopOrder?.find(
+        (s) => s._id.toString() === a.shopOrderId.toString(),
+      );
+
+      return {
+        assignmentId: a._id,
+        orderId: a.order._id,
+        shopName: a.shop.name,
+        deliveryAddress: a.order?.deliveryAddress,
+        items: shopOrder.shopOrderItems || [],
+        subTotal: shopOrder.subTotal,
+      };
+    });
+
+    return res.status(200).json(formatted);
+  } catch (error) {
+    return res.status(500).json({ message: `getAssignment error ${error} ` });
   }
 };

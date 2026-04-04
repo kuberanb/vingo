@@ -90,10 +90,16 @@ function Nav() {
                 )
 
               }
-              <div className='flex items-center justify-center relative cursor-pointer' onClick={() => navigate('/cart')}>
-                <MdOutlineShoppingCart className='' size={30} />
-                <p className=' absolute -top-2.5 right-5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs' >{cartItemsLength}</p>
-              </div>
+
+              {
+                userData.role === "user" && <div className='flex items-center justify-center relative cursor-pointer' onClick={() => navigate('/cart')}>
+                  <MdOutlineShoppingCart className='' size={30} />
+                  <p className=' absolute -top-2.5 right-5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs' >{cartItemsLength}</p>
+                </div>
+              }
+
+
+
               <button onClick={() => navigate('/my-orders')} className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
 
             </>)
