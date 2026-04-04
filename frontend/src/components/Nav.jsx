@@ -50,7 +50,7 @@ function Nav() {
 
         {/* Center */}
         {
-          userData?.role !== "owner" && <div className=' h-12 md:w-[55%] lg:w-[40%]  shadow-xl hidden px-4  md:flex items-center '  >
+          userData.role === "user" && <div className=' h-12 md:w-[55%] lg:w-[40%]  shadow-xl hidden px-4  md:flex items-center '  >
             <div className='flex gap-2 items-center px-5 ' >
               <FaLocationDot size={20} className='text-[#ff4d2d]' />
               <div className='text-sm overflow-hidden ellipsis' >{city}</div>
@@ -84,13 +84,23 @@ function Nav() {
               </button>
 
             </> : (<>
-              {
-                !isSearchOpen ? (<IoSearchOutline onClick={() => setIsSearchOpen(!isSearchOpen)} size={35} className='text-[#ff4d2d] md:hidden font-bold  cursor-pointer ' />
-                ) : (<IoMdClose onClick={() => setIsSearchOpen(!isSearchOpen)} size={35} className='text-[#ff4d2d] md:hidden font-bold  cursor-pointer ' />
+              {userData.role === "user" &&
+                (
+                  !isSearchOpen ? (
+                    <IoSearchOutline
+                      onClick={() => setIsSearchOpen(!isSearchOpen)}
+                      size={35}
+                      className="text-[#ff4d2d] md:hidden font-bold cursor-pointer"
+                    />
+                  ) : (
+                    <IoMdClose
+                      onClick={() => setIsSearchOpen(!isSearchOpen)}
+                      size={35}
+                      className="text-[#ff4d2d] md:hidden font-bold cursor-pointer"
+                    />
+                  )
                 )
-
               }
-
               {
                 userData.role === "user" && <div className='flex items-center justify-center relative cursor-pointer' onClick={() => navigate('/cart')}>
                   <MdOutlineShoppingCart className='' size={30} />
@@ -98,20 +108,14 @@ function Nav() {
                 </div>
               }
 
-
-
               <button onClick={() => navigate('/my-orders')} className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
 
             </>)
 
           }
 
-
-
           <div onClick={() => setIsProfileOpen(!isProfileOpen)} className='h-12 w-12 flex justify-center items-center rounded-full text-white text-xl  bg-amber-800 border-2 border-amber-700 relative cursor-pointer'>{userData?.fullName?.charAt(0)}</div>
         </div>
-
-
 
         {isProfileOpen && (
           <div className="absolute top-14 right-0 w-44 bg-white shadow-lg rounded-lg z-9999">
@@ -128,7 +132,7 @@ function Nav() {
         )}
       </div>
       {
-        isSearchOpen && (
+        (isSearchOpen && userData.role === "user") && (
 
           <div className='flex items-center justify-center mt-2' >
 
