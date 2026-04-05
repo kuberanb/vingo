@@ -31,7 +31,6 @@ function OwnerDashBoard() {
           </div>
         )
       }
-
       {
         myshopData && (<div className='w-full flex flex-col items-center gap-4  px-4  sm:px-6 '>
 
@@ -73,11 +72,7 @@ function OwnerDashBoard() {
                   <OwnerItemCard key={index} data={item} />
                 ))}
               </div>
-
-
-
           }
-
         </div>)
       }
 

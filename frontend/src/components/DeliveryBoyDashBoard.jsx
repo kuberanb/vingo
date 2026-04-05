@@ -13,18 +13,27 @@ function DeliveryBoyDashBoard() {
     const [availableAssignments, setAvailableAssignments] = useState([]);
 
     const getAssignments = async () => {
-
         try {
-
             const result = await axios.get(`${serverUrl}/api/order/get-assignments`, { withCredentials: true });
             console.log(result.data);
             setAvailableAssignments(result.data);
-
         } catch (e) {
             console.log(`getAssignments error : ${e}`);
         }
+    }
+
+    const acceptOrder = async (assignmentId) => {
+        try {
+
+            const response = await axios.post(`${serverUrl}/api/order/accept-order/${assignmentId}`, {}, { withCredentials: true });
+            console.log(response.data);
+
+        } catch (error) {
+            console.log(`accept order error : ${error}`);
+        }
 
     }
+
 
     useEffect(() => {
 
@@ -61,9 +70,9 @@ function DeliveryBoyDashBoard() {
                                             </div>
                                         </div>
 
-                                        <button
+                                        <button onClick={() => acceptOrder(a.assignmentId)}
                                             className="px-4 py-2 rounded-lg bg-[#ff4d2d] text-white font-semibold
-               transform transition-transform duration-200 hover:scale-110 cursor-pointer" 
+               transform transition-transform duration-200 hover:scale-110 cursor-pointer"
                                         >
                                             Accept
                                         </button>
