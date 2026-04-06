@@ -2,6 +2,7 @@ import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
 import DeliveryAssignment from "../models/deliveryassignment.model.js";
+import { assign } from "nodemailer/lib/shared/index.js";
 
 const ORDER_STATUSES = ["pending", "preparing", "out of delivery", "delivered"];
 
@@ -267,7 +268,8 @@ export const getDeliveryBoyAssignment = async (req, res) => {
     const assignments = await DeliveryAssignment.find({
       broadcastedTo: deliveryBoyId,
       status: "brodcasted",
-    }).sort({ createdAt: -1 })
+    })
+      .sort({ createdAt: -1 })
       .populate("order")
       .populate("shop");
 
@@ -356,5 +358,87 @@ export const acceptOrder = async (req, res) => {
   }
 };
 
+export const getCurrentOrder = async (req, res) => {
+  try {
+    const assignment = await DeliveryAssignment.findOne({
+      assignedTo: req.userId,
+      status: "assigned",
+    }).populate([
+      { path: "shop", select: "name" },
+      { path: "assignedTo", select: "fullName email mobile location " },
+      {
+        path: "order",
+        select: "user deliveryAddress totalAmount shopOrder",
+        populate: [
+          {
+            path: "user",
+            select: "fullName email mobile location",
+          },
+          {
+            path: "shopOrder.shop",
+            select: "name",
+          },
+          {
+            path: "shopOrder.shopOrderItems.item",
+          },
+          {
+            path: "shopOrder.assignedDeliveryBoy",
+            select: "fullName email mobile location",
+          },
+        ],
+      },
+    ]);
 
+    if (!assignment) {
+      return res.status(404).json({
+        message: "assignment not found",
+      });
+    }
 
+    if (!assignment.order) {
+      return res.status(404).json({
+        message: "order not found",
+      });
+    }
+
+    const shopOrder = assignment.order.shopOrder.find(
+      (s) => String(s._id) === String(assignment.shopOrderId),
+    );
+
+    if (!shopOrder) {
+      return res.status(404).json({
+        message: "Shop order not found",
+      });
+    }
+
+    if ((!shopOrder.shop || !shopOrder.shop.name) && assignment.shop) {
+      shopOrder.shop = assignment.shop;
+    }
+
+    let deliveryBoyLocation = { lat: null, lon: null };
+
+    if (assignment.assignedTo.location.coordinates.length == 2) {
+      deliveryBoyLocation.lat = assignment.assignedTo.location.coordinates[1];
+      deliveryBoyLocation.lon = assignment.assignedTo.location.coordinates[0];
+    }
+
+    let customerLocation = { lat: null, lon: null };
+    if (assignment.order.deliveryAddress) {
+      customerLocation.lat = assignment.order.deliveryAddress.lattitude;
+      customerLocation.lon = assignment.order.deliveryAddress.longitude;
+    }
+
+    return res.status(200).json({
+      _id: assignment.order._id,
+      user: assignment.order.user,
+      shopOrder,
+      deliveryAddress: assignment.order.deliveryAddress,
+      deliveryBoyLocation,
+      customerLocation,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: `get current order error : ${error}`,
+    });
+  }
+};

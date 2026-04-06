@@ -6,11 +6,13 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import { serverUrl } from '../App'
 import { useState } from 'react'
+import DeliveryBoyTracking from './DeliveryBoyTracking'
 
 function DeliveryBoyDashBoard() {
 
     const { userData } = useSelector((state) => state.user)
     const [availableAssignments, setAvailableAssignments] = useState([]);
+    const [currentOrder, setCurrentOrder] = useState();
 
     const getAssignments = async () => {
         try {
@@ -27,6 +29,7 @@ function DeliveryBoyDashBoard() {
 
             const response = await axios.post(`${serverUrl}/api/order/accept-order/${assignmentId}`, {}, { withCredentials: true });
             console.log(response.data);
+            await getCurrentOrder();
             getAssignments();
 
         } catch (error) {
@@ -35,13 +38,28 @@ function DeliveryBoyDashBoard() {
 
     }
 
+    const getCurrentOrder = async () => {
+
+        try {
+            const response = await axios.get(`${serverUrl}/api/order/get-current-order/`, { withCredentials: true });
+            console.log(response.data);
+            setCurrentOrder(response.data);
+        } catch (error) {
+            console.log(`get current order error : ${error}`);
+
+        }
+    }
+
 
     useEffect(() => {
 
         getAssignments();
+        getCurrentOrder();
 
 
     }, [userData]);
+
+    const currentShopName = currentOrder?.shopOrder?.shop?.name || 'Shop';
 
 
     return (
@@ -53,8 +71,9 @@ function DeliveryBoyDashBoard() {
                     <div className='font-semibold text-xs text-[#ff4d2d]'>Lattitude :  <span className=' font-semibold'>{userData.location.coordinates[1]}</span>  Longitude : <span className='font-semibold'>{userData.location.coordinates[0]}</span></div>
                 </div>
 
-                <div className='w-full shadow rounded-xl px-4 py-4 flex flex-col items-start justify-center gap-2 bg-white mb-2'>
+                {!currentOrder && <div className='w-full shadow rounded-xl px-4 py-4 flex flex-col items-start justify-center gap-2 bg-white mb-2'>
                     <h1 className='text-lg font-bold mb-4 flex items-center gap-2  '>Available Orders</h1>
+
                     <div className="space-y-4 w-full">
                         {availableAssignments.length > 0 ? (
                             availableAssignments.map((a, index) => {
@@ -73,7 +92,7 @@ function DeliveryBoyDashBoard() {
 
                                         <button onClick={() => acceptOrder(a.assignmentId)}
                                             className="px-4 py-2 rounded-lg bg-[#ff4d2d] text-white font-semibold
-               transform transition-transform duration-200 hover:scale-110 cursor-pointer"
+                 transform transition-transform duration-200 hover:scale-110 cursor-pointer"
                                         >
                                             Accept
                                         </button>
@@ -85,8 +104,20 @@ function DeliveryBoyDashBoard() {
                         )}
                     </div>
                 </div>
+                }
 
+                {currentOrder && <div className='w-full shadow rounded-xl px-4 py-4 flex flex-col items-start justify-center gap-2 bg-white mb-2' >
+                    <h2 className='text-lg mb-3 font-bold'>Current Order</h2>
+                    <div className='border rounded-lg p-4 mb-3'>
+                        <p className='font-semibold text-sm'>{currentShopName}</p>
+                        <p className='text-sm text-gray-500' >{currentOrder.deliveryAddress.text}</p>
+                        <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length} items | {currentOrder.shopOrder.subTotal}</p>
+                    </div>
 
+                    <DeliveryBoyTracking data={currentOrder} />
+
+                </div>
+                }
             </div>
         </div >
     )
