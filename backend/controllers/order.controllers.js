@@ -113,6 +113,10 @@ export const getOrders = async (req, res) => {
           { path: "user" },
           { path: "shopOrder.shop" },
           { path: "shopOrder.shopOrderItems.item" },
+          {
+            path: "shopOrder.assignedDeliveryBoy",
+            select: "fullName email mobile",
+          },
         ]);
 
       const filteredOrders = ownerOrders.map((order) => {
@@ -157,7 +161,8 @@ export const updateOrderStatus = async (req, res) => {
         .json({ message: "You are not allowed to update this order" });
     }
 
-    shopOrder.status = status;
+    const previousStatus = shopOrder.status;
+    let nextStatus = status;
 
     let deliveryBoysPayload = [];
     let message = "Order status updated successfully";
@@ -179,13 +184,12 @@ export const updateOrderStatus = async (req, res) => {
       });
 
       const nearByIds = nearByDeliveryBoys.map((i) => i._id);
-
       const busyIds = await DeliveryAssignment.find({
         assignedTo: { $in: nearByIds },
-        status: { $nin: ["brodcasted", "completed"] },
+        status: "assigned",
       }).distinct("assignedTo");
 
-      const busyIdsSet = new Set(busyIds.map((b) => String(b)));
+      const busyIdsSet = new Set(busyIds.map((id) => String(id)));
 
       const availableBoys = nearByDeliveryBoys.filter(
         (b) => !busyIdsSet.has(String(b._id)),
@@ -194,8 +198,9 @@ export const updateOrderStatus = async (req, res) => {
       const candidiates = availableBoys.map((b) => b._id);
 
       if (candidiates.length === 0) {
+        nextStatus = previousStatus;
         message =
-          "Order status updated, but no available delivery boys were found";
+          "No nearby available delivery boys were found. Ask the delivery boy to log in, allow location access, and stay within 50 km of the delivery address.";
       } else {
         const deliveryAssignment = await DeliveryAssignment.create({
           order: order._id,
@@ -216,6 +221,14 @@ export const updateOrderStatus = async (req, res) => {
           mobile: b.mobile,
         }));
       }
+    }
+
+    shopOrder.status = nextStatus;
+
+    if (nextStatus === "delivered" && shopOrder.assignment) {
+      await DeliveryAssignment.findByIdAndUpdate(shopOrder.assignment, {
+        status: "completed",
+      });
     }
 
     await order.save();
@@ -295,9 +308,9 @@ export const acceptOrder = async (req, res) => {
       });
     }
 
-    const alreadyAssigned = await DeliveryAssignment.findOne({
+    const alreadyAssigned = await DeliveryAssignment.exists({
       assignedTo: req.userId,
-      status: { $nin: ["brodcasted", "completed"] },
+      status: "assigned",
     });
 
     if (alreadyAssigned) {
@@ -308,7 +321,7 @@ export const acceptOrder = async (req, res) => {
 
     assignment.assignedTo = req.userId;
     assignment.status = "assigned";
-    assignment.createdAt = new Date();
+    assignment.acceptedAt = new Date();
 
     await assignment.save();
 
@@ -320,9 +333,15 @@ export const acceptOrder = async (req, res) => {
       });
     }
 
-    const shopOrder = order.shopOrder.map(
-      (so) => so._id === assignment.shopOrderId,
+    const shopOrder = order.shopOrder.find((so) =>
+      so._id.equals(assignment.shopOrderId),
     );
+
+    if (!shopOrder) {
+      return res.status(400).json({
+        message: `shop order not found`,
+      });
+    }
 
     shopOrder.assignedDeliveryBoy = req.userId;
     await order.save();
@@ -336,3 +355,6 @@ export const acceptOrder = async (req, res) => {
     });
   }
 };
+
+
+

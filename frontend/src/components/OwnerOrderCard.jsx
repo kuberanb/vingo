@@ -83,8 +83,21 @@ function OwnerOrderCard({ data }) {
       </div>
       {shopOrder.status === "out of delivery" && (
         <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50 w-full">
-          {data.shopOrder.assignedDeliveryBoy ?<p>Assigned Delivery Boy :</p> :  <p>Available Delivery Boys :</p> }
-          {availableBoys.length > 0 ? (
+          {shopOrder.assignedDeliveryBoy ? (
+            <p>Assigned Delivery Boy :</p>
+          ) : availableBoys.length > 0 ? (
+            <p>Available Delivery Boys :</p>
+          ) : (
+            <p>Delivery Assignment :</p>
+          )}
+          {shopOrder.assignedDeliveryBoy ? (
+            <div className="text-gray-600">
+              {shopOrder.assignedDeliveryBoy.fullName}
+              {shopOrder.assignedDeliveryBoy.mobile
+                ? ` - ${shopOrder.assignedDeliveryBoy.mobile}`
+                : ""}
+            </div>
+          ) : availableBoys.length > 0 ? (
             <div>
               {availableBoys.map((b, index) => (
                 <div key={index} className="text-gray-600">
@@ -92,10 +105,9 @@ function OwnerOrderCard({ data }) {
                 </div>
               ))}
             </div>
-          ) : data.shopOrder.assignedDeliveryBoy ? <div className="" >{data.shopOrder.assignedDeliveryBoy.fullName}</div> :
-            (
-              <div>Waiting for delivery boys to accept</div>
-            )}
+          ) : (
+            <div>Waiting for delivery boys to accept</div>
+          )}
           {deliveryStatusMessage && (
             <p className="mt-2 text-gray-600">{deliveryStatusMessage}</p>
           )}

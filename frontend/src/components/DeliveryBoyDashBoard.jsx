@@ -27,6 +27,7 @@ function DeliveryBoyDashBoard() {
 
             const response = await axios.post(`${serverUrl}/api/order/accept-order/${assignmentId}`, {}, { withCredentials: true });
             console.log(response.data);
+            getAssignments();
 
         } catch (error) {
             console.log(`accept order error : ${error}`);
