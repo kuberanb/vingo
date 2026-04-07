@@ -13,6 +13,7 @@ function DeliveryBoyDashBoard() {
     const { userData } = useSelector((state) => state.user)
     const [availableAssignments, setAvailableAssignments] = useState([]);
     const [currentOrder, setCurrentOrder] = useState();
+    const [showOtpBox, setShowOtpBox] = useState(false);
 
     const getAssignments = async () => {
         try {
@@ -115,9 +116,19 @@ function DeliveryBoyDashBoard() {
                     </div>
 
                     <DeliveryBoyTracking data={currentOrder} />
+                    {
+                        !showOtpBox ? <button className='mt-4 w-full cursor-pointer bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200' >
+                            Mark as Delivered
+                        </button> : <div className='mt-4 p-4 border rounded-xl bg-gray-50 w-full font-semibold flex flex-col gap-2'>
+                            <p>Enter Otp Sent to : <span className='text-orange-500'> {currentOrder.user.fullName}</span> </p>
+                            <input className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' type="text" placeholder='Enter Otp' />
+                            <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all' >Submit Otp</button>
+                        </div>
+                    }
 
                 </div>
                 }
+
             </div>
         </div >
     )
