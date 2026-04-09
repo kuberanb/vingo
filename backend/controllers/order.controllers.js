@@ -442,3 +442,65 @@ export const getCurrentOrder = async (req, res) => {
     });
   }
 };
+
+export const getOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // const order = await Order.findById(orderId)
+    //   .populate("user")
+    //   .populate({
+    //     path: "shopOrder",
+    //     populate: [
+    //       {
+    //         path: "shop",
+    //       },
+    //       {
+    //         path: "owner",
+    //       },
+    //       {
+    //         path: "assignment",
+    //       },
+    //       {
+    //         path: "assignedDeliveryBoy",
+    //       },
+    //       {
+    //         path: "shopOrderItems",
+    //         populate: {
+    //           path: "item",
+    //         },
+    //       },
+    //     ],
+    //   })
+    //   .lean();
+
+    const order =  await Order.findById(orderId)
+      .populate("user")
+      .populate({
+        path: "shopOrder.shop",
+        model: "Shop",
+      })
+      .populate({
+        path: "shopOrder.assignedDeliveryBoy",
+        model: "User",
+      })
+      .populate({
+        path: "shopOrder.shopOrderItems.item",
+        model: "Item",
+      })
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({
+        message: "order not found",
+      });
+    }
+
+    return res.status(200).json(order);
+  } catch (error) {
+    return res.status(500).json({
+      message: `get current order error :`,
+      error,
+    });
+  }
+};

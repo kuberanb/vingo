@@ -1,8 +1,10 @@
 
 
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function UserOrderCard({ data }) {
+  const navigate = useNavigate();
   function formatDateTime(isoDate) {
     const date = new Date(isoDate);
 
@@ -36,11 +38,8 @@ function UserOrderCard({ data }) {
         {/* Each shop */}
         {
           data.shopOrder.map((shopOrder, index) => {
-
             return (<div key={index} className='flex flex-col  bg-[#fff9f6] mb-4 p-4'>
-
               <h2 className='text-gray-600 font-semibold mb-1'>{shopOrder.shop.name}</h2>
-
               <div className='rounded-lg w-full mb-4  '>
                 <div className='flex gap-x-4'>
                   {/* Each Item */}
@@ -48,10 +47,8 @@ function UserOrderCard({ data }) {
                     return (
                       <div key={index} className='w-50 h-full border rounded-xl flex flex-col p-2 items-start '>
                         <img src={data.item.image} alt="" className='w-50 h-30 object-cover overflow-hidden rounded-t-xl ' />
-
                         <p className='font-semibold  '>{data.item.name}</p>
                         <p className=' text-gray-600 text-sm '>Qty :{data.quantity} * ₹{data.price}</p>
-
                       </div>
                     )
                   })}
@@ -63,7 +60,6 @@ function UserOrderCard({ data }) {
               <div className='flex justify-between '>
                 <h2 className='font-semibold text-black'>Subtotal : ₹{shopOrder.subTotal}</h2>
                 <p className='text-blue-500 text-sm font-semibold'>{shopOrder.status}</p>
-
               </div>
 
             </div>)
@@ -76,11 +72,8 @@ function UserOrderCard({ data }) {
         <hr className='text-black mb-2' />
         <div className='flex justify-between font-semibold items-center'>
           <div>Total : ₹{data.totalAmount}</div>
-          <button className=' text-white font-bold shadow-2xs bg-[#ff4d2d] rounded-md px-4 py-1 transition-transform duration-200 hover:scale-105 cursor-pointer'>Track Order</button>
-
-
+          <button onClick={() => navigate(`/track-order/${data._id}`)} className=' text-white font-bold shadow-2xs bg-[#ff4d2d] rounded-md px-4 py-1 transition-transform duration-200 hover:scale-105 cursor-pointer'>Track Order</button>
         </div>
-
       </div>
     </div>
   )
