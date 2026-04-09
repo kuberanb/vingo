@@ -13,7 +13,6 @@ function useUpdateLocation() {
     useEffect(() => {
         if (!userData) return;
 
-
         async function updateLocation(lat, lon) {
 
             try {
@@ -28,7 +27,6 @@ function useUpdateLocation() {
         navigator.geolocation.watchPosition((pos) => {
             updateLocation(pos.coords.latitude, pos.coords.longitude);
         })
-
 
     }, [userData]);
 

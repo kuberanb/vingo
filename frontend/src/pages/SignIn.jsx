@@ -58,13 +58,15 @@ function SignIn() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      await axios.post(
+      let response = await axios.post(
         `${serverUrl}/api/auth/google-auth`,
         { email: user.email },
         { withCredentials: true }
       );
 
       console.log("Google Auth Success");
+      dispatch(setUserData(response.data));
+
       navigate("/");
 
     } catch (error) {

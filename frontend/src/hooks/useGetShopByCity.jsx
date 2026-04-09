@@ -9,6 +9,8 @@ import { setShopInMyCity } from "../redux/userSlice";
 function useGetShopByCity() {
     const currentCity = useSelector((state) => state.user.city);
     const dispatch = useDispatch();
+    const userData = useSelector((state) => state.user.userData);
+
 
     useEffect(() => {
 
@@ -27,7 +29,7 @@ function useGetShopByCity() {
         }
 
         fetchShops();
-    }, [currentCity, dispatch])
+    }, [currentCity, userData, dispatch])
 
 }
 

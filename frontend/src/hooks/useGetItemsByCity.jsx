@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 function useGetItemsByCity() {
     const dispatch = useDispatch();
     const currentCity = useSelector((state) => state.user.city);
+    const userData = useSelector((state) => state.user.userData);
 
     useEffect(() => {
 
@@ -25,15 +26,13 @@ function useGetItemsByCity() {
 
             } catch (error) {
                 console.log(`getAllItems hook error : ${error}`);
-
             }
-
         }
 
         if (currentCity) {
             getItemsByCity();
         }
-    }, [currentCity, dispatch])
+    }, [currentCity, userData, dispatch])
 
 
 }

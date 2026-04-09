@@ -3,11 +3,16 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { setMyShopData } from "../redux/ownerSlice";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 function useGetMyShop() {
     const dispatch = useDispatch();
+    const userData = useSelector((state) => state.user.userData);
 
     useEffect(() => {
+
+        if (userData?.role !== "owner") return;
+
 
         const fetchMyshop = async () => {
             console.log("fetchMyshop running ....");
@@ -28,7 +33,7 @@ function useGetMyShop() {
 
         fetchMyshop();
 
-    }, [dispatch]);
+    }, [dispatch, userData]);
 }
 
 export default useGetMyShop;
