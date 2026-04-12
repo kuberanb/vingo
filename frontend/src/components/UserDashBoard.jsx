@@ -14,6 +14,7 @@ function UserDashBoard() {
   const [rightCat, setRightCat] = useState(false);
   const [leftShop, setLeftShop] = useState(false);
   const [rightShop, setRightShop] = useState(false);
+  const [updatedItemsList, setUpdatedItemsList] = useState([]);
 
   const catRef = useRef(null);
   const shopRef = useRef(null);
@@ -24,11 +25,19 @@ function UserDashBoard() {
 
 
   useEffect(() => {
+    setUpdatedItemsList(itemsInMyCity)
     checkScroll(catRef, setLeftCat, setRightCat);
     checkScroll(shopRef, setLeftShop, setRightShop);
-  }, []);
+  }, [itemsInMyCity]);
 
-
+  const handleFilterByCategory = (category) => {
+    if (category == "ALL") {
+      setUpdatedItemsList(itemsInMyCity);
+    } else {
+      const filteredList = itemsInMyCity.filter((i) => i.category === category);
+      setUpdatedItemsList(filteredList);
+    }
+  }
 
   return (
     <div className=' flex flex-col w-full min-h-screen gap-5 items-center bg-[#fff9f6] '>
@@ -45,7 +54,8 @@ function UserDashBoard() {
           }
           <div ref={catRef} onScroll={() => checkScroll(catRef, setLeftCat, setRightCat)}
             className='w-full flex flex-row gap-4 pb-2 overflow-x-auto' >
-            {categories.map((value, index) => <CategoryCard name={value.category} imageUrl={value.image} key={index} />)}
+            {categories.map((value, index) => <CategoryCard onclick={() => handleFilterByCategory(value.category)}
+              name={value.category} imageUrl={value.image} key={index} />)}
           </div>
           {
             rightCat && <button onClick={() => scrollRight(catRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-[#ff4d2d]'>
@@ -53,7 +63,6 @@ function UserDashBoard() {
             </button>
           }
         </div>
-
 
 
         <h1 className='text-gray-800 text-2xl sm:text-3xl' >Best Shop in {currentCity}</h1>
@@ -84,17 +93,12 @@ function UserDashBoard() {
 
         }
         <h1 className='text-gray-800 text-2xl sm:text-3xl' >Suggetsed Food Items</h1>
-
-
         <div className='w-full '>
-
           <div
             className='w-full h-auto flex flex-wrap  justify-center  gap-4 pb-2 overflow-x-auto' >
-            {itemsInMyCity?.map((value, index) => <FoodCard data={value} key={index} />)}
+            {updatedItemsList?.map((value, index) => <FoodCard data={value} key={index} />)}
           </div>
-
         </div>
-
       </div>
     </div>
   )
