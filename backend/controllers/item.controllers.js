@@ -155,7 +155,7 @@ export const getItemsByCity = async (req, res) => {
   try {
     const { city } = req.query;
 
-    const shopList = await Shop.find({  }).populate("items");
+    const shopList = await Shop.find({}).populate("items");
 
     if (!shopList || shopList.length === 0) {
       return res.status(200).json({ message: "No Shop in the city" });
@@ -174,5 +174,24 @@ export const getItemsByCity = async (req, res) => {
     return res.status(200).json({ itemsList });
   } catch (error) {
     return res.status(500).json({ message: `getItems error : ${error}` });
+  }
+};
+
+export const getItemsByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+
+    const shop = await Shop.findById(shopId).populate("items");
+
+    if (!shop) {
+      return res.status(404).json({ message: "shop not found" });
+    }
+
+    return res.status(200).json({
+      shop: shop,
+      items: shop.items,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: `getItemsByShop error : ${error}` });
   }
 };

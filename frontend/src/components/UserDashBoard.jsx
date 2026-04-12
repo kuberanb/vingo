@@ -7,6 +7,7 @@ import { FaChevronCircleRight } from "react-icons/fa";
 import { useSelector } from 'react-redux';
 import { scrollLeft, scrollRight, checkScroll } from "../utils/scrollUtils";
 import FoodCard from './FoodCard';
+import { useNavigate } from 'react-router-dom';
 
 
 function UserDashBoard() {
@@ -15,14 +16,12 @@ function UserDashBoard() {
   const [leftShop, setLeftShop] = useState(false);
   const [rightShop, setRightShop] = useState(false);
   const [updatedItemsList, setUpdatedItemsList] = useState([]);
-
+  const navigate = useNavigate();
   const catRef = useRef(null);
   const shopRef = useRef(null);
-
   const currentCity = useSelector((state) => state.user.city);
   const shopsInMyCity = useSelector((state) => state.user.shopsInMyCity);
   const itemsInMyCity = useSelector((state) => state.user.itemsInMyCity);
-
 
   useEffect(() => {
     setUpdatedItemsList(itemsInMyCity)
@@ -82,7 +81,7 @@ function UserDashBoard() {
               }
               <div ref={shopRef} onScroll={() => checkScroll(shopRef, setLeftShop, setRightCat)}
                 className='w-full flex flex-row gap-4 pb-2 overflow-x-auto' >
-                {shopsInMyCity?.map((value, index) => <CategoryCard name={value?.name} imageUrl={value?.image} key={index} />)}
+                {shopsInMyCity?.map((value, index) => <CategoryCard onclick={() => navigate(`/shop/${value._id}`)} name={value?.name} imageUrl={value?.image} key={index} />)}
               </div>
               {
                 rightShop && <button onClick={() => scrollRight(shopRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-[#ff4d2d]'>
