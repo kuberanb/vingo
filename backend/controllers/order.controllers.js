@@ -3,7 +3,7 @@ import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
 import DeliveryAssignment from "../models/deliveryassignment.model.js";
 import { assign } from "nodemailer/lib/shared/index.js";
-
+import { sendDeliveryOtpMail } from "../utils/mail.js";
 const ORDER_STATUSES = ["pending", "preparing", "out of delivery", "delivered"];
 
 export const placeOrder = async (req, res) => {
@@ -474,7 +474,7 @@ export const getOrderById = async (req, res) => {
     //   })
     //   .lean();
 
-    const order =  await Order.findById(orderId)
+    const order = await Order.findById(orderId)
       .populate("user")
       .populate({
         path: "shopOrder.shop",
@@ -500,6 +500,107 @@ export const getOrderById = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: `get current order error :`,
+      error,
+    });
+  }
+};
+
+export const sendDeliveryOtp = async (req, res) => {
+  try {
+    const { orderId, shopId } = req.body;
+
+    const order = await Order.findById(orderId).populate("user");
+
+    if (!order) {
+      return res.status(404).json({
+        message: `order not found`,
+      });
+    }
+
+    const shopOrder = order.shopOrder.find(
+      (s) => String(s.shop) === String(shopId),
+    );
+
+    if (!shopOrder) {
+      return res.status(404).json({
+        message: `shop order not found`,
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await sendDeliveryOtpMail({ to: order.user.email, otp: otp });
+
+    shopOrder.deliveryOtp = otp;
+    shopOrder.otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
+
+    await order.save();
+
+    return res.status(200).json({ message: `delivery otp sent sucessfully` });
+  } catch (error) {
+    return res.status(500).json({
+      message: `send delivery otp error :`,
+      error,
+    });
+  }
+};
+
+export const verifyDeliveryOtp = async (req, res) => {
+  try {
+    const { orderId, shopId, otp } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        message: `order not found`,
+      });
+    }
+
+    const shopOrder = order.shopOrder.find(
+      (s) => String(s.shop) === String(shopId),
+    );
+
+    if (!shopOrder) {
+      return res.status(404).json({
+        message: `shop order not found`,
+      });
+    }
+
+    if (!shopOrder.deliveryOtp) {
+      return res.status(400).json({
+        message: "No active OTP",
+      });
+    }
+
+    if (!shopOrder.otpExpires || Date.now() > shopOrder.otpExpires) {
+      return res.status(400).json({
+        message: `otp expired`,
+      });
+    }
+
+    if (String(shopOrder.deliveryOtp) === String(otp)) {
+      shopOrder.status = "delivered";
+      shopOrder.deliveryOtp = null;
+      shopOrder.otpExpires = null;
+
+      shopOrder.deliveredAt = new Date();
+
+      await order.save();
+      await DeliveryAssignment.deleteOne({
+        order: orderId,
+        shop: shopId,
+      });
+
+      return res
+        .status(200)
+        .json({ message: `delivered otp verified sucessfully` });
+    } else {
+      return res.status(400).json({ message: `Incorrect Otp` });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: `verify delivery otp error :`,
       error,
     });
   }
