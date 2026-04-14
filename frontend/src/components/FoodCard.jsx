@@ -54,7 +54,7 @@ function FoodCard({ data }) {
 
 
     return (
-        <div className=' flex flex-col w-60 overflow-hidden relative  rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-xl  '>
+        <div className=' flex flex-col w-60 overflow-hidden relative  rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-xl cursor-pointer '>
 
             <div className=' h-40 w-60 relative'>
                 <img src={data.image} alt={data.name}
