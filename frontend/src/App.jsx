@@ -7,7 +7,7 @@ import SignIn from './pages/SignIn.jsx'
 import SignUp from './pages/SignUp.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import useGetCurentUser from './hooks/useGetCurentUser.jsx'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Home from './pages/Home.jsx'
 import useGetCurrentCity from './hooks/useGetCurrentCity.jsx'
 import useGetMyShop from './hooks/useGetMyShop.jsx'
@@ -24,6 +24,9 @@ import useGetMyOrders from './hooks/useGetMyOrders.jsx'
 import useUpdateLocation from './hooks/useUpdateLocation.jsx'
 import TrackOrderPage from './pages/TrackOrderPage.jsx'
 import Shop from './pages/Shop.jsx'
+import { useEffect } from 'react'
+import { io } from 'socket.io-client'
+import { setSocket } from './redux/userSlice.js'
 export const serverUrl = "http://localhost:8000";
 
 function App() {
@@ -34,8 +37,25 @@ function App() {
   useGetShopByCity();
   useGetItemsByCity();
   useGetMyOrders();
-
+  const dispatch = useDispatch();
   const userData = useSelector((state) => state.user.userData);
+
+  useEffect(() => {
+
+    const socketInstance = io(serverUrl, { withCredentials: true })
+    dispatch(setSocket(socketInstance));
+
+    socketInstance.on('connect', () => {
+      if (userData?._id) {
+        socketInstance.emit('identity', { userId: userData?._id });
+      }
+    });
+
+    return () => {
+      socketInstance.disconnect();
+    }
+
+  }, [dispatch, userData?._id]);
 
   return (
     <Routes>
@@ -55,6 +75,5 @@ function App() {
     </Routes>
   )
 }
-
 
 export default App

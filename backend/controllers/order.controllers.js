@@ -80,10 +80,27 @@ export const placeOrder = async (req, res) => {
     });
 
     await order.populate([
-      { path: "user" },
       { path: "shopOrder.shop" },
       { path: "shopOrder.shopOrderItems.item" },
+      { path: "shopOrder.owner" },
+      { path: "user", select: "fullName email mobile role" },
     ]);
+
+    const io = req.app.get("io");
+
+    if (io) {
+      order.shopOrder.forEach((shopOrder) => {
+        const ownerSocketId = shopOrder.owner.socketId;
+        if (ownerSocketId) {
+          const ownerFormattedOrder = {
+            ...order.toObject(),
+            shopOrder: [shopOrder], // same filtering like getOrders owner
+          };
+
+          io.to(ownerSocketId).emit("newOrder", ownerFormattedOrder);
+        }
+      });
+    }
 
     return res.status(201).json(order);
   } catch (error) {
@@ -246,6 +263,15 @@ export const updateOrderStatus = async (req, res) => {
     const updatedShopOrder = order.shopOrder.find(
       (i) => i.shop._id.toString() == shopId,
     );
+ 
+     const io = req.app.get('io');
+
+     if(io){
+
+
+
+     }
+
 
     return res.status(200).json({
       message,
