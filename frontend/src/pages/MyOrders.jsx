@@ -5,7 +5,7 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import OwnerOrderCard from '../components/OwnerOrderCard';
 import UserOrderCard from '../components/UserOrderCard';
-import { addMyOrder } from '../redux/userSlice';
+import { addMyOrder, updateRealtimeOrderStatus } from '../redux/userSlice';
 
 function MyOrders() {
     const navigate = useNavigate();
@@ -17,12 +17,19 @@ function MyOrders() {
         socket?.on('newOrder', (data) => {
 
             if (data.shopOrder?.[0]?.owner._id === userData._id) {
-            dispatch(addMyOrder(data));
+                dispatch(addMyOrder(data));
+            }
+        });
+
+        socket?.on('update-status', ({ orderId, shopId, status, userId }) => {
+            if (userId == userData._id) {
+                dispatch(updateRealtimeOrderStatus({ orderId, shopId, status }))
             }
         });
 
         return () => {
             socket?.off('newOrder');
+            socket?.off('update-status')
         }
 
     }, [socket]);

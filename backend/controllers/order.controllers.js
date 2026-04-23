@@ -220,14 +220,17 @@ export const updateOrderStatus = async (req, res) => {
         message =
           "No nearby available delivery boys were found. Ask the delivery boy to log in, allow location access, and stay within 50 km of the delivery address.";
       } else {
-        const deliveryAssignment = await DeliveryAssignment.create({
+        let deliveryAssignment = await DeliveryAssignment.create({
           order: order._id,
           shop: shopId,
           shopOrderId: shopOrder._id,
           broadcastedTo: candidiates,
           status: "brodcasted",
         });
-
+        deliveryAssignment = await deliveryAssignment.populate([
+          { path: "order" },
+          { path: "shop" },
+        ]);
         shopOrder.assignedDeliveryBoy = deliveryAssignment.assignedTo;
         shopOrder.assignment = deliveryAssignment._id;
 
@@ -238,6 +241,26 @@ export const updateOrderStatus = async (req, res) => {
           lattitude: b.location.coordinates?.[1],
           mobile: b.mobile,
         }));
+
+        const io = req.app.get("io");
+
+        if (io) {
+          availableBoys.forEach((b) => {
+            const socketId = b.socketId;
+
+            if (socketId) {
+              io.to(socketId).emit("newAssignment", {
+                sentTo: b._id,
+                assignmentId: deliveryAssignment._id,
+                orderId: deliveryAssignment.order._id,
+                shopName: deliveryAssignment.shop.name,
+                deliveryAddress: deliveryAssignment.order?.deliveryAddress,
+                items: shopOrder.shopOrderItems || [],
+                subTotal: shopOrder.subTotal,
+              });
+            }
+          });
+        }
       }
     }
 
@@ -258,20 +281,30 @@ export const updateOrderStatus = async (req, res) => {
         path: "shopOrder.assignedDeliveryBoy",
         select: "fullName email mobile",
       },
+      {
+        path: "user",
+        select: "socketId",
+      },
     ]);
 
     const updatedShopOrder = order.shopOrder.find(
       (i) => i.shop._id.toString() == shopId,
     );
- 
-     const io = req.app.get('io');
 
-     if(io){
+    const io = req.app.get("io");
 
+    if (io) {
+      const userSocketId = order.user.socketId;
 
-
-     }
-
+      if (userSocketId) {
+        io.to(userSocketId).emit("update-status", {
+          orderId: order._id,
+          shopId: updatedShopOrder.shop._id,
+          status: updatedShopOrder.status,
+          userId: order.user._id,
+        });
+      }
+    }
 
     return res.status(200).json({
       message,

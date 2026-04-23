@@ -35,7 +35,7 @@ const userSlice = createSlice({
     },
     setSocket: (state, action) => {
       state.socket = action.payload;
-    }, 
+    },
     addToCart: (state, action) => {
       const cartItem = action.payload;
       const existingItem = state.cartItems.find(
@@ -115,6 +115,21 @@ const userSlice = createSlice({
         shopOrder.status = status;
       }
     },
+    updateRealtimeOrderStatus: (state, action) => {
+      const { orderId, shopId, status } = action.payload;
+
+      const order = state.myOrders.find((o) => o._id === orderId);
+
+      if (!order) return;
+
+      const shopOrder = order.shopOrder?.find(
+        (so) => String(so.shop?._id || so.shop) === shopId,
+      );
+
+      if (shopOrder) {
+        shopOrder.status = status;
+      }
+    },
   },
 });
 
@@ -132,6 +147,7 @@ export const {
   setMyOrders,
   addMyOrder,
   updateOrderStatus,
+  updateRealtimeOrderStatus,
   setSocket,
 } = userSlice.actions;
 export default userSlice.reducer;
