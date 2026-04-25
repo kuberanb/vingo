@@ -31,5 +31,24 @@ export const socketHandler = (io) => {
         );
       } catch (error) {}
     });
+    socket.on("updateLocation", async ({ lattitude, longitude, userId }) => {
+      try {
+        const user = await User.findByIdAndUpdate(userId, {
+          location: { type: "Point", coordinates: [longitude, lattitude] },
+          isOnline: true,
+          socketId: socket.id,
+        });
+
+        if (user) {
+          io.on("updateDeliveryLocation", {
+            deliveryBoyId: userId,
+            lattitude,
+            longitude,
+          });
+        }
+      } catch (error) {
+        console.log(`updateDeliveryLocation error : `, error);
+      }
+    });
   });
 };

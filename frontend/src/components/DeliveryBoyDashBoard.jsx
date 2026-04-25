@@ -15,6 +15,42 @@ function DeliveryBoyDashBoard() {
     const [currentOrder, setCurrentOrder] = useState();
     const [showOtpBox, setShowOtpBox] = useState(false);
     const [otp, setOtp] = useState("");
+    const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null);
+
+
+    useEffect(() => {
+
+        if (!socket || userData.role !== "deliveryBoy") return;
+
+        let watchId;
+
+        if (navigator.geolocation) {
+            watchId = navigator.geolocation.watchPosition((position) => {
+                const lattitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                setDeliveryBoyLocation({
+                    lat: lattitude, lon: longitude,
+                })
+
+                socket.emit('updateLocation', {
+                    lattitude, longitude, userId: userData._id
+                });
+
+            }),
+                (error) => {
+                    console.log(error);
+                },
+            {
+                enableHighAccuracy: true
+
+            }
+        }
+
+        return () => {
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+        }
+
+    }, [socket, userData]);
 
     const getAssignments = async () => {
         try {
@@ -159,7 +195,18 @@ function DeliveryBoyDashBoard() {
                         <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length} items | {currentOrder.shopOrder.subTotal}</p>
                     </div>
 
-                    <DeliveryBoyTracking data={currentOrder} />
+                    <DeliveryBoyTracking data={{
+                        deliveryBoyLocation: deliveryBoyLocation || {
+                            lat: userData.location.coordinates[1],
+                            lon: userData.location.coordinates[0],
+                        },
+                        customerLocation: {
+                            lat: currentOrder.deliveryAddress.lattitude,
+                            lon: currentOrder.deliveryAddress.longitude
+                        }
+
+
+                    }} />
                     {
                         !showOtpBox ? <button onClick={sendOtp} className='mt-4 w-full cursor-pointer bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200' >
                             Mark as Delivered

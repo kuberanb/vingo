@@ -4,11 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../App";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import DeliveryBoyTracking from "../components/DeliveryBoyTracking";
+import { useSelector } from "react-redux";
 
 function TrackOrderPage() {
     const { orderId } = useParams();
     const [currentOrder, setCurrentOrder] = useState(null);
     const navigate = useNavigate();
+    const { socket, userData } = useSelector(state => state.user);
+    const [liveLocations, setLiveLocations] = useState({});
 
     const handleGetOrder = async () => {
         try {
@@ -23,6 +26,20 @@ function TrackOrderPage() {
             console.log("handleGetOrder error :", error);
         }
     };
+
+
+    useEffect(() => {
+
+        socket.on('updateDeliveryLocation', ({ deliveryBoyId,
+            lattitude, longitude }) => {
+            setLiveLocations(prev => ({
+                ...prev,
+                [deliveryBoyId]: { lat: lattitude, lon: longitude }
+            }));
+
+        })
+
+    }, []);
 
     useEffect(() => {
         handleGetOrder();
@@ -102,14 +119,13 @@ function TrackOrderPage() {
 
                                         <DeliveryBoyTracking data={{
                                             deliveryBoyLocation: {
-                                                lat: shopOrder.assignedDeliveryBoy.location.coordinates[1],
-                                                lon: shopOrder.assignedDeliveryBoy.location.coordinates[0],
+                                                lat: userData.location.coordinates[1],
+                                                lon: userData.location.coordinates[0],
                                             },
                                             customerLocation: {
                                                 lat: currentOrder.deliveryAddress.lattitude,
                                                 lon: currentOrder.deliveryAddress.longitude
                                             }
-
                                         }} />
 
                                     </div>
