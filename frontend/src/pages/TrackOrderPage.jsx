@@ -10,7 +10,7 @@ function TrackOrderPage() {
     const { orderId } = useParams();
     const [currentOrder, setCurrentOrder] = useState(null);
     const navigate = useNavigate();
-    const { socket, userData } = useSelector(state => state.user);
+    const { socket } = useSelector(state => state.user);
     const [liveLocations, setLiveLocations] = useState({});
 
     const handleGetOrder = async () => {
@@ -29,17 +29,18 @@ function TrackOrderPage() {
 
 
     useEffect(() => {
-
-        socket.on('updateDeliveryLocation', ({ deliveryBoyId,
-            lattitude, longitude }) => {
+        socket?.on('updateDeliveryLocation', ({ deliveryBoyId, lattitude, longitude }) => {
             setLiveLocations(prev => ({
                 ...prev,
                 [deliveryBoyId]: { lat: lattitude, lon: longitude }
             }));
-
         })
 
-    }, []);
+        return () => {
+            socket?.off('updateDeliveryLocation')
+        };
+
+    }, [socket]);
 
     useEffect(() => {
         handleGetOrder();
@@ -114,13 +115,12 @@ function TrackOrderPage() {
 
                                 {
                                     shopOrder.assignedDeliveryBoy &&
-
                                     <div className="h-100 w-full rounded-2xl  shadow-md">
 
                                         <DeliveryBoyTracking data={{
-                                            deliveryBoyLocation: {
-                                                lat: userData.location.coordinates[1],
-                                                lon: userData.location.coordinates[0],
+                                            deliveryBoyLocation: liveLocations[shopOrder.assignedDeliveryBoy._id] || {
+                                                lat: shopOrder.assignedDeliveryBoy.location.coordinates[1],
+                                                lon: shopOrder.assignedDeliveryBoy.location.coordinates[0],
                                             },
                                             customerLocation: {
                                                 lat: currentOrder.deliveryAddress.lattitude,

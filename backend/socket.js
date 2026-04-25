@@ -40,7 +40,7 @@ export const socketHandler = (io) => {
         });
 
         if (user) {
-          io.on("updateDeliveryLocation", {
+          io.emit("updateDeliveryLocation", {
             deliveryBoyId: userId,
             lattitude,
             longitude,
