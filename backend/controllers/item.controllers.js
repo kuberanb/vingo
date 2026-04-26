@@ -195,3 +195,40 @@ export const getItemsByShop = async (req, res) => {
     return res.status(500).json({ message: `getItemsByShop error : ${error}` });
   }
 };
+
+export const rating = async (req, res) => {
+  try {
+    const { itemId, rating } = req.body;
+
+    const numericRating = Number(rating);
+
+    if (numericRating > 5 || numericRating < 1) {
+      return res
+        .status(400)
+        .json({ message: `rating should be between 1 and 5` });
+    }
+
+    const item = await Item.findById(itemId);
+
+    if (!item) {
+      return res.status(404).json({ message: `item not found` });
+    }
+
+    let newCount = item.rating.count + 1;
+
+    let newAverageRating =
+      (item.rating.average * item.rating.count + numericRating) / newCount;
+
+    item.rating.average = Number(newAverageRating.toFixed(1));
+    item.rating.count = newCount;
+
+    await item.save();
+
+    return res.status(200).json({
+      rating: Number(newAverageRating.toFixed(1)),
+      rating_count: newCount,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: `rating error : ${error}` });
+  }
+};

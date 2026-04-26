@@ -1,10 +1,14 @@
 
 
+import axios from 'axios';
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import { serverUrl } from '../App';
+import { useState } from 'react';
 
 function UserOrderCard({ data }) {
   const navigate = useNavigate();
+  const [selectedRating, setSelectedRating] = useState({})
   function formatDateTime(isoDate) {
     const date = new Date(isoDate);
 
@@ -14,7 +18,23 @@ function UserOrderCard({ data }) {
     return `${formattedDate} ${formattedTime}`;
   }
 
+  const handleRating = async ({ itemId, rating }) => {
 
+    try {
+
+      const response = await axios.post(`${serverUrl}/api/item/rating`, {
+        itemId, rating
+      }, { withCredentials: true },);
+
+      setSelectedRating(prev => ({
+        ...prev, [itemId]: rating
+      }));
+      console.log(`${response.data}`);
+
+    } catch (error) {
+      console.log(`handleRating error : `, error);
+    }
+  }
 
   return (
     <div className='bg-white rounded-lg shadow p-4 space-y-4'>
@@ -49,25 +69,28 @@ function UserOrderCard({ data }) {
                         <img src={data.item.image} alt="" className='w-50 h-30 object-cover overflow-hidden rounded-t-xl ' />
                         <p className='font-semibold  '>{data.item.name}</p>
                         <p className=' text-gray-600 text-sm '>Qty :{data.quantity} * ₹{data.price}</p>
+                        {
+                          shopOrder.status === "delivered" &&
+                          <div className=' flex space-x-1 mt-2'>
+                            {
+                              [1, 2, 3, 4, 5].map((star) => (<button onClick={() => handleRating({ itemId: data.item._id, rating: star })} className={`${selectedRating[data.item._id] >= star ? `text-yellow-400` : `text-gray-400`} cursor-pointer text-lg `}>      ★
+                              </button>))
+                            }
+                          </div>
+                        }
                       </div>
                     )
                   })}
                 </div>
-
-
               </div>
               <hr className='mb-2' />
               <div className='flex justify-between '>
                 <h2 className='font-semibold text-black'>Subtotal : ₹{shopOrder.subTotal}</h2>
                 <p className='text-blue-500 text-sm font-semibold'>{shopOrder.status}</p>
               </div>
-
             </div>)
-
           },
-
           )
-
         }
         <hr className='text-black mb-2' />
         <div className='flex justify-between font-semibold items-center'>

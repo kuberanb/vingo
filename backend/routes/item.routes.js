@@ -5,6 +5,7 @@ import {
   addItem,
   getItem,
   getItemsByShop,
+  rating,
 } from "../controllers/item.controllers.js";
 import { editItem } from "../controllers/item.controllers.js";
 import { deleteItem } from "../controllers/item.controllers.js";
@@ -17,6 +18,6 @@ itemRouter.post("/edit-item/:itemId", isAuth, upload.single("image"), editItem);
 itemRouter.get("/get-item/:itemId", isAuth, getItem);
 itemRouter.delete("/item/:itemId", isAuth, deleteItem);
 itemRouter.get("/get-items-by-shop/:shopId", isAuth, getItemsByShop);
-
 itemRouter.get("/items", isAuth, getItemsByCity);
+itemRouter.post("/rating",isAuth,rating);
 export default itemRouter;

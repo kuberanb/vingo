@@ -80,8 +80,8 @@ function FoodCard({ data }) {
             <div className='flex flex-col w-full p-4'>
                 <div className='text-black font-semibold '>{data.name}</div>
                 <div className='flex w-full  justify-start items-center gap-1 mb-2'  >
-                    {starRating({ rating: data.rating.count })}
-                    {data.rating.average}
+                    {starRating({ rating: data.rating.average })}
+                    {data.rating.count}
                 </div>
                 <div className='w-full flex flex-row justify-between' >
                     <div className='text-black font-semibold'>

@@ -84,6 +84,7 @@ function DeliveryBoyDashBoard() {
             setCurrentOrder(response.data);
         } catch (error) {
             console.log(`get current order error : ${error}`);
+            setCurrentOrder(null);
 
         }
     }
@@ -108,6 +109,10 @@ function DeliveryBoyDashBoard() {
         try {
             const response = await axios.post(`${serverUrl}/api/order/verify-delivery-otp/`, { orderId: currentOrder._id, shopId: currentOrder.shopOrder.shop._id, otp }, { withCredentials: true });
             console.log(`verifyOtp response`, response.data);
+            setShowOtpBox(false);
+            setOtp("");
+            await getCurrentOrder();
+            getAssignments();
 
         } catch (error) {
             console.log(`verifyOtp error : `, error);
@@ -149,7 +154,7 @@ function DeliveryBoyDashBoard() {
             <div className='w-full max-w-2xl flex flex-col gap-5 items-start p-2.5 ' >
                 <div className='w-full shadow rounded-xl px-2 py-2 flex flex-col items-center justify-center gap-2 bg-white mb-2 text-center'>
                     <div className='font-semibold text-2xl text-[#ff4d2d]'>Welcome, {userData.fullName}</div>
-                    <div className='font-semibold text-xs text-[#ff4d2d]'>Lattitude :  <span className=' font-semibold'>{userData.location.coordinates[1]}</span>  Longitude : <span className='font-semibold'>{userData.location.coordinates[0]}</span></div>
+                    <div className='font-semibold text-xs text-[#ff4d2d]'>Lattitude :  <span className=' font-semibold'>{deliveryBoyLocation?.lat || userData.location.coordinates[1]}</span>  Longitude : <span className='font-semibold'>{deliveryBoyLocation?.lon || userData.location.coordinates[0]}</span></div>
                 </div>
 
                 {!currentOrder && <div className='w-full shadow rounded-xl px-4 py-4 flex flex-col items-start justify-center gap-2 bg-white mb-2'>
