@@ -119,21 +119,68 @@ function CheckOutPage() {
                     longitude: location?.long
                 },
                 cartItems: cartItems,
-                // totalAmount: totalAmount,
+                totalAmount: totalAmountWithDeliveryFee,
             }, { withCredentials: true });
 
             console.log(`handlePlaceOrder response : ${response}  `)
-            dispatch(addMyOrder(response.data))
-            dispatch(clearCart());
 
-            navigate('/order-sucess')
+            if (paymentMethod == "cod") {
+                dispatch(addMyOrder(response.data))
+                navigate('/order-sucess')
+            } else {
+
+                const orderId = response.data.orderId
+                const razorOrder = response.data.razorOrder
+
+                openRazorPayWindow(orderId, razorOrder)
+
+            }
+
+
+
+            dispatch(clearCart());
 
         } catch (error) {
             console.log(`place order error : ${error}`);
         } finally {
             setLoading(false);
 
+
         }
+    }
+
+
+    const openRazorPayWindow = (orderId, razorOrder) => {
+
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: razorOrder.amount,
+            currency: "INR",
+            name: "Vingo",
+            description: "Food Delivery Website",
+            order_id: razorOrder.id,
+            handler: async (response) => {
+
+                try {
+
+                    const result = await axios.post(`${serverUrl}/api/order/verify-payment`, {
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        orderId: orderId
+                    }, { withCredentials: true })
+
+                    dispatch(addMyOrder(response.data))
+                    navigate('/order-sucess')
+
+
+                } catch (error) {
+                    console.log('verify payment error : ', error)
+                }
+            }
+        }
+
+        const rzp = new window.Razorpay(options)
+        rzp.open()
+
     }
 
     return (

@@ -4,7 +4,16 @@ import User from "../models/user.model.js";
 import DeliveryAssignment from "../models/deliveryassignment.model.js";
 import { assign } from "nodemailer/lib/shared/index.js";
 import { sendDeliveryOtpMail } from "../utils/mail.js";
+import Razorpay from "razorpay";
+import dotenv from "dotenv";
+dotenv.config();
+
 const ORDER_STATUSES = ["pending", "preparing", "out of delivery", "delivered"];
+
+var instance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 export const placeOrder = async (req, res) => {
   try {
@@ -67,6 +76,34 @@ export const placeOrder = async (req, res) => {
       return sum + Number(i.subTotal);
     }, 0);
 
+    if (paymentMethod == "online") {
+      const razorOrder = await instance.orders.create({
+        amount: Math.round(totalAmount * 100),
+        currency: "INR",
+        receipt: `reciept_${Date.now()}`,
+      });
+
+      const newOrder = await Order.create({
+        user: req.userId,
+        paymentMethod: paymentMethod,
+        deliveryAddress: {
+          text: deliveryAddress.text,
+          lattitude: deliveryAddress.lattitude,
+          longitude: deliveryAddress.longitude,
+        },
+        totalAmount: totalAmount,
+        shopOrder: shopOrders,
+        razorpayOrderId: razorOrder.id,
+        payment: false,
+      });
+
+      return res.status(200).json({
+        razorOrder,
+        orderId: newOrder._id,
+        key_is: process.env.RAZORPAY_KEY_ID,
+      });
+    }
+
     const order = await Order.create({
       user: req.userId,
       paymentMethod: paymentMethod,
@@ -105,6 +142,39 @@ export const placeOrder = async (req, res) => {
     return res.status(201).json(order);
   } catch (error) {
     return res.status(500).json(`place order error : ${error}`);
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const { razorpay_payment_id, orderId } = req.body;
+
+    const payment = await instance.payments.fetch(razorpay_payment_id);
+
+    if (!payment || payment.status != "captured") {
+      return res.status(400).json({ message: "payment not captured" });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(400).json({ message: "order not found" });
+    }
+
+    order.payment = true;
+    order.razorpayPaymentId = razorpay_payment_id;
+    await order.save();
+
+    await order.populate([
+      { path: "shopOrder.shop" },
+      { path: "shopOrder.shopOrderItems.item" },
+      { path: "shopOrder.owner" },
+      { path: "user", select: "fullName email mobile role" },
+    ]);
+
+    return res.status(200).json({ order });
+  } catch (error) {
+    return res.status(500).json({ message: `verify payment error : ${error}` });
   }
 };
 
