@@ -53,9 +53,19 @@ function OwnerOrderCard({ data }) {
         <FaPhoneAlt className="text-gray-600" />
         <div className="text-gray-600">{data.user?.mobile}</div>
       </div>
+      {data.paymentMethod === "online" ? (
+        <>
+          <p>Payment: {data.payment ? "True" : "False"}</p>
+          <p>Payment Method: {data.paymentMethod}</p>
+        </>
+      ) : (
+        <p>Payment Method: {data.paymentMethod}</p>
+      )}
       <p className="text-gray-600 text-md font-semibold ">
         {data.deliveryAddress.text}
       </p>
+
+
       <p className="text-gray-600 text-sm mb-1">
         Lat : {data.deliveryAddress.lattitude} Lon :{" "}
         {data.deliveryAddress.longitude}

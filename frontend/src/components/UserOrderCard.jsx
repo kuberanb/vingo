@@ -46,7 +46,8 @@ function UserOrderCard({ data }) {
             order #${data._id.slice(-5)}
           </div>
           <div className='text-gray-600'>
-            {data.paymentMethod.toUpperCase()}
+            {data.paymentMethod == "cod" ? <p>            {data.paymentMethod.toUpperCase()}
+            </p> : <p className='text-sm text-gray-400 font-semibold' > Payment : {data.payment ? "true" : "false"}</p>}
           </div>
         </div>
         <div className='flex justify-start mb-1' >

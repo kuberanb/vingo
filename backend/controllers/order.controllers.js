@@ -75,10 +75,12 @@ export const placeOrder = async (req, res) => {
     const totalAmount = shopOrders.reduce((sum, i) => {
       return sum + Number(i.subTotal);
     }, 0);
+    const deliveryFee = totalAmount > 500 ? 0 : 40;
+    const totalAmountWithDeliveryFee = totalAmount + deliveryFee;
 
     if (paymentMethod == "online") {
       const razorOrder = await instance.orders.create({
-        amount: Math.round(totalAmount * 100),
+        amount: Math.round(totalAmountWithDeliveryFee * 100),
         currency: "INR",
         receipt: `reciept_${Date.now()}`,
       });
@@ -91,7 +93,7 @@ export const placeOrder = async (req, res) => {
           lattitude: deliveryAddress.lattitude,
           longitude: deliveryAddress.longitude,
         },
-        totalAmount: totalAmount,
+        totalAmount: totalAmountWithDeliveryFee,
         shopOrder: shopOrders,
         razorpayOrderId: razorOrder.id,
         payment: false,
@@ -112,7 +114,7 @@ export const placeOrder = async (req, res) => {
         lattitude: deliveryAddress.lattitude,
         longitude: deliveryAddress.longitude,
       },
-      totalAmount: totalAmount,
+      totalAmount: totalAmountWithDeliveryFee,
       shopOrder: shopOrders,
     });
 
