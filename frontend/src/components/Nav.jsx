@@ -11,18 +11,37 @@ import { setUserData } from '../redux/userSlice';
 import { FaPlus } from "react-icons/fa6";
 import { IoReceipt } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
+import FoodCard from './FoodCard';
 
 
 function Nav() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const userData = useSelector((state) => state.user.userData);
   const city = useSelector((state) => state.user.city);
+  const itemsInMyCity = useSelector((state) => state.user.itemsInMyCity);
   const cartItemsLength = useSelector((state) => state.user.cartItems.length || 0);
   // const myOrdersLength = useSelector( (state)=> state.user.myOrders.lentgh || 0  )
   const myShopData = useSelector((state) => state.owner.myShopData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  }
+
+  const closeSearch = () => {
+    setSearchQuery("");
+    setIsSearchOpen(false);
+  }
+
+  const searchedItems = searchQuery.trim()
+    ? (itemsInMyCity || []).filter((item) =>
+      item.name?.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    )
+    : [];
+
   const handleLogout = async () => {
 
     try {
@@ -60,7 +79,7 @@ function Nav() {
 
             <div className='flex items-center gap-2 w-full'>
               <IoSearchOutline size={20} className='text-[#ff4d2d]' />
-              <input placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
+              <input value={searchQuery} onChange={handleSearchChange} placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
             </div>
 
           </div>
@@ -88,13 +107,18 @@ function Nav() {
                 (
                   !isSearchOpen ? (
                     <IoSearchOutline
-                      onClick={() => setIsSearchOpen(!isSearchOpen)}
+                      onClick={() => {
+                        setIsSearchOpen(!isSearchOpen);
+                        setSearchQuery("");
+                      }}
                       size={35}
                       className="text-[#ff4d2d] md:hidden font-bold cursor-pointer"
                     />
                   ) : (
                     <IoMdClose
-                      onClick={() => setIsSearchOpen(!isSearchOpen)}
+                      onClick={() => {
+                        closeSearch();
+                      }}
                       size={35}
                       className="text-[#ff4d2d] md:hidden font-bold cursor-pointer"
                     />
@@ -136,7 +160,7 @@ function Nav() {
 
           <div className='flex items-center justify-center mt-2' >
 
-            <div className=' fixed top-22 w-[90%] justify-center  h-15  flex md:hidden  shadow-xl px-4   items-center '  >
+            <div className=' fixed top-22 z-9999 w-[90%] justify-center  h-15  flex md:hidden bg-[#fff9f6] shadow-xl px-4   items-center '  >
               <div className='flex gap-2 items-center px-2 ' >
                 <FaLocationDot size={20} className='text-[#ff4d2d]' />
                 <div className='text-sm overflow-hidden ellipsis' >{city} </div>
@@ -146,7 +170,25 @@ function Nav() {
 
               <div className='flex items-center gap-2 w-full'>
                 <IoSearchOutline size={20} className='text-[#ff4d2d]' />
-                <input placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
+                <input value={searchQuery} onChange={handleSearchChange} placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
+              </div>
+            </div>
+          </div>
+        )
+      }
+      {
+        (searchQuery.trim() && userData.role === "user") && (
+          <div className='fixed left-0 right-0 bottom-0 top-40 md:top-20 z-9998 bg-black/40 pt-4 px-4 overflow-y-auto'>
+            <div className='w-full max-w-6xl mx-auto bg-[#fff9f6] rounded-xl shadow-xl p-4'>
+              <div className='w-full flex justify-end mb-4'>
+                <IoMdClose onClick={closeSearch} size={30} className='text-[#ff4d2d] cursor-pointer' />
+              </div>
+              <div className='w-full flex flex-wrap justify-center gap-4 pb-4'>
+                {searchedItems.length > 0 ? (
+                  searchedItems.map((item, index) => <FoodCard data={item} key={index} />)
+                ) : (
+                  <div className='text-gray-500 text-lg'>No Items Available</div>
+                )}
               </div>
             </div>
           </div>
