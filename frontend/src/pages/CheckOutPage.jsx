@@ -168,7 +168,7 @@ function CheckOutPage() {
                         orderId: orderId
                     }, { withCredentials: true })
 
-                    dispatch(addMyOrder(response.data))
+                    dispatch(addMyOrder(result.data.order))
                     navigate('/order-sucess')
 
 

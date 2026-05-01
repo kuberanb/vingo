@@ -9,6 +9,11 @@ import { useState } from 'react';
 function UserOrderCard({ data }) {
   const navigate = useNavigate();
   const [selectedRating, setSelectedRating] = useState({})
+
+  if (!data?._id) {
+    return null;
+  }
+
   function formatDateTime(isoDate) {
     const date = new Date(isoDate);
 
@@ -58,20 +63,20 @@ function UserOrderCard({ data }) {
         <hr className='mb-2' />
         {/* Each shop */}
         {
-          data.shopOrder.map((shopOrder, index) => {
+          data.shopOrder?.map((shopOrder, index) => {
             return (<div key={index} className='flex flex-col  bg-[#fff9f6] mb-4 p-4'>
-              <h2 className='text-gray-600 font-semibold mb-1'>{shopOrder.shop.name}</h2>
+              <h2 className='text-gray-600 font-semibold mb-1'>{shopOrder.shop?.name || "Shop"}</h2>
               <div className='rounded-lg w-full mb-4  '>
                 <div className='flex gap-x-4'>
                   {/* Each Item */}
-                  {shopOrder.shopOrderItems.map((data, index) => {
+                  {shopOrder.shopOrderItems?.map((data, index) => {
                     return (
                       <div key={index} className='w-50 h-full border rounded-xl flex flex-col p-2 items-start '>
-                        <img src={data.item.image} alt="" className='w-50 h-30 object-cover overflow-hidden rounded-t-xl ' />
-                        <p className='font-semibold  '>{data.item.name}</p>
+                        <img src={data.item?.image} alt="" className='w-50 h-30 object-cover overflow-hidden rounded-t-xl ' />
+                        <p className='font-semibold  '>{data.item?.name || "Item"}</p>
                         <p className=' text-gray-600 text-sm '>Qty :{data.quantity} * ₹{data.price}</p>
                         {
-                          shopOrder.status === "delivered" &&
+                          shopOrder.status === "delivered" && data.item?._id &&
                           <div className=' flex space-x-1 mt-2'>
                             {
                               [1, 2, 3, 4, 5].map((star) => (<button onClick={() => handleRating({ itemId: data.item._id, rating: star })} className={`${selectedRating[data.item._id] >= star ? `text-yellow-400` : `text-gray-400`} cursor-pointer text-lg `}>      ★
