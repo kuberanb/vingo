@@ -1,11 +1,11 @@
 import express from "express";
-import isAuth from "../middlewares/isAuth.js";
-import { upload } from "../middlewares/multer.js";
+import isAuth from "../middlewares/isAuth";
+import { upload } from "../middlewares/multer";
 import {
   createEditShop,
   getCurrentShop,
   getShops,
-} from "../controllers/shop.controllers.js";
+} from "../controllers/shop.controllers";
 
 const shopRouter = express.Router();
 

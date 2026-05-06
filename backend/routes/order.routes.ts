@@ -1,5 +1,5 @@
 import express from "express";
-import isAuth from "../middlewares/isAuth.js";
+import isAuth from "../middlewares/isAuth";
 import {
   acceptOrder,
   getCurrentOrder,
@@ -11,7 +11,7 @@ import {
   updateOrderStatus,
   verifyDeliveryOtp,
   verifyPayment,
-} from "../controllers/order.controllers.js";
+} from "../controllers/order.controllers";
 
 const orderRouter = express.Router();
 

@@ -1,7 +1,25 @@
-import mongoose from "mongoose";
-import { type } from "os";
+import mongoose, { Schema, type Model  } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+export interface IUser {
+  fullName: string;
+  email: string;
+  password?: string;
+  mobile: string;
+  role: "user" | "owner" | "deliveryBoy";
+  resetOtp?: string;
+  otpExpired?: Date;
+  isOtpVerified?: boolean;
+  location?: {
+    type: "Point",
+    coordinates: [number, number]
+  };
+  socketId?: string;
+  isOnline?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const userSchema = new Schema<IUser>(
   {
     fullName: {
       type: String,
@@ -57,5 +75,5 @@ const userSchema = new mongoose.Schema(
 
 userSchema.index({ location: "2dsphere" });
 
-const User = mongoose.model("User", userSchema);
+const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 export default User;

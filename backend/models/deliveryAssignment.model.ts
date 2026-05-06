@@ -1,6 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { Model, Schema, Types } from "mongoose";
+import { IOrder } from "./order.model";
+import { IShop } from "./shop.model";
+import { IUser } from "./user.model";
 
-const deliveryAssignmentSchema = new mongoose.Schema(
+export interface IDeliveryAssignment {
+  order?: Types.ObjectId | IOrder;
+  shop?: Types.ObjectId | IShop;
+  shopOrderId: Types.ObjectId;
+  broadcastedTo: (Types.ObjectId | IUser)[];
+  assignedTo?: Types.ObjectId | IUser;
+  status: "brodcasted" | "assigned" | "completed";
+  acceptedAt?: Date;
+}
+
+const deliveryAssignmentSchema = new Schema<IDeliveryAssignment>(
   {
     order: {
       type: mongoose.Schema.Types.ObjectId,
@@ -29,12 +42,15 @@ const deliveryAssignmentSchema = new mongoose.Schema(
       type: String,
       enum: ["brodcasted", "assigned", "completed"],
     },
-    acceptedAt: Date,
+    acceptedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true },
 );
 
-const DeliveryAssignment = mongoose.model(
+const DeliveryAssignment: Model<IDeliveryAssignment> = mongoose.model<IDeliveryAssignment>(
   "DeliveryAssignment",
   deliveryAssignmentSchema,
 );

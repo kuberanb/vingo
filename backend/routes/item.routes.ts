@@ -1,15 +1,15 @@
 import express from "express";
-import isAuth from "../middlewares/isAuth.js";
-import { upload } from "../middlewares/multer.js";
+import isAuth from "../middlewares/isAuth";
+import { upload } from "../middlewares/multer";
 import {
   addItem,
   getItem,
   getItemsByShop,
   rating,
-} from "../controllers/item.controllers.js";
-import { editItem } from "../controllers/item.controllers.js";
-import { deleteItem } from "../controllers/item.controllers.js";
-import { getItemsByCity } from "../controllers/item.controllers.js";
+} from "../controllers/item.controllers";
+import { editItem } from "../controllers/item.controllers";
+import { deleteItem } from "../controllers/item.controllers";
+import { getItemsByCity } from "../controllers/item.controllers";
 
 const itemRouter = express.Router();
 

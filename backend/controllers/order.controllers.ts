@@ -1,9 +1,9 @@
-import Order from "../models/order.model.js";
-import Shop from "../models/shop.model.js";
-import User from "../models/user.model.js";
-import DeliveryAssignment from "../models/deliveryassignment.model.js";
-import { assign } from "nodemailer/lib/shared/index.js";
-import { sendDeliveryOtpMail } from "../utils/mail.js";
+import Order from "../models/order.model";
+import Shop from "../models/shop.model";
+import User from "../models/user.model";
+import DeliveryAssignment from "../models/deliveryassignment.model";
+import { assign } from "nodemailer/lib/shared/index";
+import { sendDeliveryOtpMail } from "../utils/mail";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
 dotenv.config();

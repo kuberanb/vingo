@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",             
+    "moduleResolution": "Node", 
+    "ignoreDeprecations": "6.0",  // ✅ add this  
+    "rootDir": ".",
+    "outDir": "dist",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

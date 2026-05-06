@@ -1,4 +1,4 @@
-import User from "./models/user.model.js";
+import User from "./models/user.model";
 
 export const socketHandler = (io) => {
   io.on("connection", (socket) => {
