@@ -1,22 +1,36 @@
 import User from "../models/user.model";
 
-const getCurrentUser = async (req, res) => {
+import { Request, Response } from "express";
+
+interface AuthRequest extends Request {
+  userId?: string;
+}
+
+interface LocationBody {
+  lat: number;
+  lon: number;
+}
+
+// Get Current User
+const getCurrentUser = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
-    console.log("Cookies:", req.cookies);
+
 
     if (!userId) {
-      return res.status(400).json({ message: "userId not found" });
+      return res.status(401).json({ message: "User not authenticated" });
     }
+
+    console.log("Cookies:", req.cookies);
 
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(400).json({ message: "user not found" });
+      return res.status(404).json({ message: "user not found" });
     }
 
     return res.status(200).json({ user });
-  } catch (error) {
+  } catch (error: any) {
     return res
       .status(500)
       .json({ message: `GetCurrentUser Error :${error?.message}` });
@@ -25,9 +39,21 @@ const getCurrentUser = async (req, res) => {
 
 export default getCurrentUser;
 
-const updateUserLocation = async (req, res) => {
+
+
+
+// Update User Location
+const updateUserLocation = async (req: AuthRequest, res: Response) => {
   try {
-    const { lat, lon } = req.body;
+
+    const { lat, lon } = req.body as LocationBody;
+    if (!req.userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    if (lat === undefined || lon === undefined) {
+      return res.status(400).json({ message: "lat & lon are required" });
+    }
 
     const user = await User.findByIdAndUpdate(
       req.userId,
@@ -41,11 +67,11 @@ const updateUserLocation = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(400).json({ message: "user not found" });
+      return res.status(404).json({ message: "user not found" });
     }
 
     return res.status(200).json(user);
-  } catch (error) {
+  } catch (error: any) {
     return res
       .status(500)
       .json({ message: `upadateUserLocation error : ${error}` });
