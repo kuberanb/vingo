@@ -1,26 +1,114 @@
 import Order from "../models/order.model";
 import Shop from "../models/shop.model";
-import User from "../models/user.model";
-import DeliveryAssignment from "../models/deliveryassignment.model";
+import User, { IUser } from "../models/user.model";
+import DeliveryAssignment from "../models/deliveryAssignment.model";
 import { assign } from "nodemailer/lib/shared/index";
 import { sendDeliveryOtpMail } from "../utils/mail";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
+import { Request, Response } from "express";
 dotenv.config();
 
-const ORDER_STATUSES = ["pending", "preparing", "out of delivery", "delivered"];
+interface DeliveryAddress {
+  text: string;
+  lattitude: number;
+  longitude: number;
+}
 
-var instance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+interface CartItem {
+  id: string;
+  shop: string;
+  price: number;
+  quantity: number;
+}
+
+interface PlaceOrderBody {
+  cartItems: CartItem[];
+  paymentMethod: "cod" | "online";
+  deliveryAddress: DeliveryAddress;
+}
+
+interface ShopGroupedItems {
+  [shopId: string]: CartItem[];
+}
+
+interface AuthRequest<
+  P = any,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any,
+> extends Request<P, ResBody, ReqBody, ReqQuery> {
+  userId?: string;
+}
+
+interface PlaceOrderRequest extends AuthRequest<any, any, PlaceOrderBody> {
+  body: PlaceOrderBody;
+}
+
+type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+interface VerifyPaymentBody {
+  razorpay_payment_id: string;
+  orderId: string;
+}
+
+interface UpdateOrderStatusBody {
+  status: OrderStatus;
+}
+
+interface UpdateOrderStatusParams {
+  orderId: string;
+  shopId: string;
+}
+
+interface AssignmentParams {
+  assignmentId: string;
+}
+
+interface OrderByIdParams {
+  orderId: string;
+}
+
+interface DeliveryOtpBody {
+  orderId: string;
+  shopId: string;
+  otp?: string;
+}
+
+interface ShopOrderResponse {
+  shop: string;
+  owner: IUser["_id"];
+  subTotal: number;
+  shopOrderItems: {
+    item: string;
+    price: number;
+    quantity: number;
+  }[];
+}
+
+const ORDER_STATUSES = [
+  "pending",
+  "preparing",
+  "out of delivery",
+  "delivered",
+] as const;
+
+const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
-export const placeOrder = async (req, res) => {
+export const placeOrder = async (
+  req: PlaceOrderRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { cartItems, paymentMethod, deliveryAddress } = req.body;
 
     if (!cartItems || cartItems.length === 0) {
-      return res.status(400).json({ message: "cart is empty" });
+      return res.status(400).json({
+        message: "cart is empty",
+      });
     }
 
     if (
@@ -28,66 +116,78 @@ export const placeOrder = async (req, res) => {
       !deliveryAddress.lattitude ||
       !deliveryAddress.longitude
     ) {
-      return res.status(400).json({ message: "send complete address" });
+      return res.status(400).json({
+        message: "send complete address",
+      });
     }
 
     if (!paymentMethod) {
-      return res.status(400).json({ message: "payment method is required" });
+      return res.status(400).json({
+        message: "payment method is required",
+      });
     }
 
-    const groupItemsbyShop = {};
+    const groupItemsbyShop: ShopGroupedItems = {};
 
     cartItems.forEach((item) => {
       if (!groupItemsbyShop[item.shop]) {
         groupItemsbyShop[item.shop] = [];
       }
+
       groupItemsbyShop[item.shop].push(item);
     });
 
-    const shopOrders = await Promise.all(
-      Object.keys(groupItemsbyShop).map(async (shopId) => {
-        const shop = await Shop.findById(shopId).populate("owner");
-        if (!shop) {
-          return res.status(400).json({ message: "Shop not found" });
-        }
+    const shopOrders: ShopOrderResponse[] =
+      await Promise.all(
+        Object.keys(groupItemsbyShop).map(async (shopId) => {
+          const shop = await Shop.findById(shopId).populate("owner");
 
-        const items = groupItemsbyShop[shopId];
+          if (!shop) {
+            throw new Error("Shop not found");
+          }
 
-        const shopOrderItems = items.map((i) => ({
-          item: i.id,
-          price: i.price,
-          quantity: i.quantity,
-        }));
+          const items = groupItemsbyShop[shopId];
 
-        const subTotal = items.reduce((sum, i) => {
-          return sum + Number(i.price) * Number(i.quantity);
-        }, 0);
+          const shopOrderItems = items.map((i) => ({
+            item: i.id,
+            price: i.price,
+            quantity: i.quantity,
+          }));
 
-        return {
-          shop: shopId,
-          owner: shop.owner._id,
-          subTotal,
-          shopOrderItems,
-        };
-      }),
-    );
+          const subTotal = items.reduce((sum, i) => {
+            return sum + i.price * i.quantity;
+          }, 0);
+
+          return {
+            shop: shopId,
+            owner: (shop.owner as IUser)._id,
+            subTotal,
+            shopOrderItems,
+          };
+        })
+      );
 
     const totalAmount = shopOrders.reduce((sum, i) => {
-      return sum + Number(i.subTotal);
+      return sum + i.subTotal;
     }, 0);
-    const deliveryFee = totalAmount > 500 ? 0 : 40;
-    const totalAmountWithDeliveryFee = totalAmount + deliveryFee;
 
-    if (paymentMethod == "online") {
+    const deliveryFee = totalAmount > 500 ? 0 : 40;
+
+    const totalAmountWithDeliveryFee =
+      totalAmount + deliveryFee;
+
+    if (paymentMethod === "online") {
       const razorOrder = await instance.orders.create({
-        amount: Math.round(totalAmountWithDeliveryFee * 100),
+        amount: Math.round(
+          totalAmountWithDeliveryFee * 100
+        ),
         currency: "INR",
-        receipt: `reciept_${Date.now()}`,
+        receipt: `receipt_${Date.now()}`,
       });
 
       const newOrder = await Order.create({
         user: req.userId,
-        paymentMethod: paymentMethod,
+        paymentMethod,
         deliveryAddress: {
           text: deliveryAddress.text,
           lattitude: deliveryAddress.lattitude,
@@ -99,16 +199,20 @@ export const placeOrder = async (req, res) => {
         payment: false,
       });
 
+      if (!newOrder) {
+        throw new Error("Order creation failed");
+      }
+
       return res.status(200).json({
         razorOrder,
         orderId: newOrder._id,
-        key_is: process.env.RAZORPAY_KEY_ID,
+        key_id: process.env.RAZORPAY_KEY_ID,
       });
     }
 
     const order = await Order.create({
       user: req.userId,
-      paymentMethod: paymentMethod,
+      paymentMethod,
       deliveryAddress: {
         text: deliveryAddress.text,
         lattitude: deliveryAddress.lattitude,
@@ -118,36 +222,53 @@ export const placeOrder = async (req, res) => {
       shopOrder: shopOrders,
     });
 
+    if (!order) {
+      throw new Error("Order creation failed");
+    }
+
     await order.populate([
       { path: "shopOrder.shop" },
       { path: "shopOrder.shopOrderItems.item" },
       { path: "shopOrder.owner" },
-      { path: "user", select: "fullName email mobile role" },
+      {
+        path: "user",
+        select: "fullName email mobile role",
+      },
     ]);
 
     const io = req.app.get("io");
 
     if (io) {
       order.shopOrder.forEach((shopOrder) => {
-        const ownerSocketId = shopOrder.owner.socketId;
+        const owner = shopOrder.owner as IUser;
+
+        const ownerSocketId = owner.socketId;
+
         if (ownerSocketId) {
           const ownerFormattedOrder = {
             ...order.toObject(),
-            shopOrder: [shopOrder], // same filtering like getOrders owner
+            shopOrder: [shopOrder],
           };
 
-          io.to(ownerSocketId).emit("newOrder", ownerFormattedOrder);
+          io.to(ownerSocketId).emit(
+            "newOrder",
+            ownerFormattedOrder
+          );
         }
       });
     }
 
     return res.status(201).json(order);
   } catch (error) {
-    return res.status(500).json(`place order error : ${error}`);
+    return res.status(500).json({
+      message: `place order error : ${error}`,
+    });
   }
 };
-
-export const verifyPayment = async (req, res) => {
+export const verifyPayment = async (
+  req: AuthRequest<any, any, VerifyPaymentBody>,
+  res: Response
+): Promise<Response> => {
   try {
     const { razorpay_payment_id, orderId } = req.body;
 
@@ -180,7 +301,10 @@ export const verifyPayment = async (req, res) => {
   }
 };
 
-export const getOrders = async (req, res) => {
+export const getOrders = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response | null> => {
   try {
     const user = await User.findById(req.userId);
     if (user.role === "user") {
@@ -211,7 +335,7 @@ export const getOrders = async (req, res) => {
 
       const filteredOrders = ownerOrders.map((order) => {
         order.shopOrder = order.shopOrder.filter((shop) =>
-          shop.owner.equals(req.userId),
+          (shop.owner as any).equals(req.userId),
         );
         return order;
       });
@@ -224,9 +348,12 @@ export const getOrders = async (req, res) => {
   }
 };
 
-export const updateOrderStatus = async (req, res) => {
+export const updateOrderStatus = async (
+  req: AuthRequest<any, any, UpdateOrderStatusBody>,
+  res: Response
+): Promise<Response> => {
   try {
-    const { orderId, shopId } = req.params;
+    const { orderId, shopId } = req.params as UpdateOrderStatusParams;
     const { status } = req.body;
 
     if (!ORDER_STATUSES.includes(status)) {
@@ -239,7 +366,7 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    const shopOrder = order.shopOrder.find((i) => i.shop.toString() == shopId);
+    const shopOrder = order.shopOrder.find((i) => (i.shop as any).toString() == shopId) as any;
 
     if (!shopOrder) {
       return res.status(400).json({ message: "Shop Order not found" });
@@ -302,9 +429,10 @@ export const updateOrderStatus = async (req, res) => {
         deliveryAssignment = await deliveryAssignment.populate([
           { path: "order" },
           { path: "shop" },
-        ]);
-        shopOrder.assignedDeliveryBoy = deliveryAssignment.assignedTo;
-        shopOrder.assignment = deliveryAssignment._id;
+        ]) as any;
+        const populatedDeliveryAssignment = deliveryAssignment as any;
+        shopOrder.assignedDeliveryBoy = populatedDeliveryAssignment.assignedTo;
+        shopOrder.assignment = populatedDeliveryAssignment._id;
 
         deliveryBoysPayload = availableBoys.map((b) => ({
           id: b._id,
@@ -323,10 +451,10 @@ export const updateOrderStatus = async (req, res) => {
             if (socketId) {
               io.to(socketId).emit("newAssignment", {
                 sentTo: b._id,
-                assignmentId: deliveryAssignment._id,
-                orderId: deliveryAssignment.order._id,
-                shopName: deliveryAssignment.shop.name,
-                deliveryAddress: deliveryAssignment.order?.deliveryAddress,
+                assignmentId: populatedDeliveryAssignment._id,
+                orderId: populatedDeliveryAssignment.order._id,
+                shopName: populatedDeliveryAssignment.shop.name,
+                deliveryAddress: populatedDeliveryAssignment.order?.deliveryAddress,
                 items: shopOrder.shopOrderItems || [],
                 subTotal: shopOrder.subTotal,
               });
@@ -360,20 +488,20 @@ export const updateOrderStatus = async (req, res) => {
     ]);
 
     const updatedShopOrder = order.shopOrder.find(
-      (i) => i.shop._id.toString() == shopId,
-    );
+      (i) => (i.shop as any)._id.toString() == shopId,
+    ) as any;
 
     const io = req.app.get("io");
 
     if (io) {
-      const userSocketId = order.user.socketId;
+      const userSocketId = (order.user as any).socketId;
 
       if (userSocketId) {
         io.to(userSocketId).emit("update-status", {
           orderId: order._id,
           shopId: updatedShopOrder.shop._id,
           status: updatedShopOrder.status,
-          userId: order.user._id,
+          userId: (order.user as any)._id,
         });
       }
     }
@@ -392,7 +520,10 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-export const getDeliveryBoyAssignment = async (req, res) => {
+export const getDeliveryBoyAssignment = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const deliveryBoyId = req.userId;
 
@@ -405,15 +536,16 @@ export const getDeliveryBoyAssignment = async (req, res) => {
       .populate("shop");
 
     const formatted = assignments.map((a) => {
-      const shopOrder = a.order?.shopOrder?.find(
+      const assignment = a as any;
+      const shopOrder = assignment.order?.shopOrder?.find(
         (s) => s._id.toString() === a.shopOrderId.toString(),
       );
 
       return {
-        assignmentId: a._id,
-        orderId: a.order._id,
-        shopName: a.shop.name,
-        deliveryAddress: a.order?.deliveryAddress,
+        assignmentId: assignment._id,
+        orderId: assignment.order._id,
+        shopName: assignment.shop.name,
+        deliveryAddress: assignment.order?.deliveryAddress,
         items: shopOrder.shopOrderItems || [],
         subTotal: shopOrder.subTotal,
       };
@@ -425,9 +557,12 @@ export const getDeliveryBoyAssignment = async (req, res) => {
   }
 };
 
-export const acceptOrder = async (req, res) => {
+export const acceptOrder = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
-    const { assignmentId } = req.params;
+    const { assignmentId } = req.params as AssignmentParams;
 
     const assignment = await DeliveryAssignment.findById(assignmentId);
 
@@ -452,7 +587,7 @@ export const acceptOrder = async (req, res) => {
       });
     }
 
-    assignment.assignedTo = req.userId;
+    assignment.assignedTo = req.userId as any;
     assignment.status = "assigned";
     assignment.acceptedAt = new Date();
 
@@ -467,7 +602,7 @@ export const acceptOrder = async (req, res) => {
     }
 
     const shopOrder = order.shopOrder.find((so) =>
-      so._id.equals(assignment.shopOrderId),
+      (so as any)._id.equals(assignment.shopOrderId),
     );
 
     if (!shopOrder) {
@@ -476,7 +611,7 @@ export const acceptOrder = async (req, res) => {
       });
     }
 
-    shopOrder.assignedDeliveryBoy = req.userId;
+    shopOrder.assignedDeliveryBoy = req.userId as any;
     await order.save();
 
     return res.status(200).json({
@@ -489,7 +624,10 @@ export const acceptOrder = async (req, res) => {
   }
 };
 
-export const getCurrentOrder = async (req, res) => {
+export const getCurrentOrder = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const assignment = await DeliveryAssignment.findOne({
       assignedTo: req.userId,
@@ -532,7 +670,10 @@ export const getCurrentOrder = async (req, res) => {
       });
     }
 
-    const shopOrder = assignment.order.shopOrder.find(
+    const order = assignment.order as any;
+    const assignedTo = assignment.assignedTo as any;
+
+    const shopOrder = order.shopOrder.find(
       (s) => String(s._id) === String(assignment.shopOrderId),
     );
 
@@ -548,22 +689,22 @@ export const getCurrentOrder = async (req, res) => {
 
     let deliveryBoyLocation = { lat: null, lon: null };
 
-    if (assignment.assignedTo.location.coordinates.length == 2) {
-      deliveryBoyLocation.lat = assignment.assignedTo.location.coordinates[1];
-      deliveryBoyLocation.lon = assignment.assignedTo.location.coordinates[0];
+    if (assignedTo.location.coordinates.length == 2) {
+      deliveryBoyLocation.lat = assignedTo.location.coordinates[1];
+      deliveryBoyLocation.lon = assignedTo.location.coordinates[0];
     }
 
     let customerLocation = { lat: null, lon: null };
-    if (assignment.order.deliveryAddress) {
-      customerLocation.lat = assignment.order.deliveryAddress.lattitude;
-      customerLocation.lon = assignment.order.deliveryAddress.longitude;
+    if (order.deliveryAddress) {
+      customerLocation.lat = order.deliveryAddress.lattitude;
+      customerLocation.lon = order.deliveryAddress.longitude;
     }
 
     return res.status(200).json({
-      _id: assignment.order._id,
-      user: assignment.order.user,
+      _id: order._id,
+      user: order.user,
       shopOrder,
-      deliveryAddress: assignment.order.deliveryAddress,
+      deliveryAddress: order.deliveryAddress,
       deliveryBoyLocation,
       customerLocation,
     });
@@ -574,9 +715,12 @@ export const getCurrentOrder = async (req, res) => {
   }
 };
 
-export const getOrderById = async (req, res) => {
+export const getOrderById = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
-    const { orderId } = req.params;
+    const { orderId } = req.params as OrderByIdParams;
 
     // const order = await Order.findById(orderId)
     //   .populate("user")
@@ -636,7 +780,10 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-export const sendDeliveryOtp = async (req, res) => {
+export const sendDeliveryOtp = async (
+  req: AuthRequest<any, any, DeliveryOtpBody>,
+  res: Response
+): Promise<Response> => {
   try {
     const { orderId, shopId } = req.body;
 
@@ -660,7 +807,7 @@ export const sendDeliveryOtp = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await sendDeliveryOtpMail({ to: order.user.email, otp: otp });
+    await sendDeliveryOtpMail({ to: (order.user as IUser).email, otp: otp });
 
     shopOrder.deliveryOtp = otp;
     shopOrder.otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
@@ -676,7 +823,10 @@ export const sendDeliveryOtp = async (req, res) => {
   }
 };
 
-export const verifyDeliveryOtp = async (req, res) => {
+export const verifyDeliveryOtp = async (
+  req: AuthRequest<any, any, DeliveryOtpBody>,
+  res: Response
+): Promise<Response> => {
   try {
     const { orderId, shopId, otp } = req.body;
 
@@ -704,7 +854,7 @@ export const verifyDeliveryOtp = async (req, res) => {
       });
     }
 
-    if (!shopOrder.otpExpires || Date.now() > shopOrder.otpExpires) {
+    if (!shopOrder.otpExpires || Date.now() > shopOrder.otpExpires.getTime()) {
       return res.status(400).json({
         message: `otp expired`,
       });
