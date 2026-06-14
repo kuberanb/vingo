@@ -51,12 +51,12 @@ function TrackOrderPage() {
         <div className="w-full min-h-screen bg-[#fafafa]">
 
             {/* AppBar */}
-            <div className="w-full h-14 bg-[#fff9f6] flex items-center justify-center relative">
+            <div className="w-full h-14 bg-brand-surface flex items-center justify-center relative">
 
                 <IoIosArrowRoundBack
                     onClick={() => navigate("/my-orders")}
                     size={34}
-                    className="absolute left-4 text-[#ff4d2d] cursor-pointer"
+                    className="absolute left-4 text-brand-primary cursor-pointer"
                 />
 
                 <h1 className="text-lg font-semibold">
@@ -74,7 +74,7 @@ function TrackOrderPage() {
                         className="bg-white p-4 rounded-2xl shadow-md border border-orange-100 space-y-3"
                     >
 
-                        <p className="text-lg font-bold text-[#ff4d2d]">
+                        <p className="text-lg font-bold text-brand-primary">
                             {shopOrder.shop.name}
                         </p>
 

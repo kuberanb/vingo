@@ -184,8 +184,8 @@ function CheckOutPage() {
     }
 
     return (
-        <div className='w-full min-h-screen bg-[#fff9f6]'>
-            <IoIosArrowRoundBack onClick={() => navigate("/")} size={30} className='text-[#ff4d2d] cursor-pointer' />
+        <div className='w-full min-h-screen bg-brand-surface'>
+            <IoIosArrowRoundBack onClick={() => navigate("/")} size={30} className='text-brand-primary cursor-pointer' />
             <div className='flex items-center justify-center min-h-screen w-full'>
 
                 <div className=' w-full md:max-w-xl shadow bg-white rounded-xl p-4  ' >
@@ -195,7 +195,7 @@ function CheckOutPage() {
                     <section>
 
                         <div className='flex gap-2 justify-start items-center mb-2'>
-                            <MdLocationOn size={20} className='text-[#ff4d2d]' />
+                            <MdLocationOn size={20} className='text-brand-primary' />
                             <div className='text-black font-semibold'>Delivery Location</div>
 
                         </div>
@@ -204,7 +204,7 @@ function CheckOutPage() {
                         <div onClick={getLatLngByAddress} className='flex items-center justify-center gap-2 mb-2'>
                             <input
                                 onChange={(e) => setAddressInput(e.target.value)} value={addressInput} className=" w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-md px-2 h-8" />
-                            <div className='flex items-center justify-center border border-transparent rounded-lg bg-[#ff4d2d] hover:border cursor-pointer h-8 w-8 transition duration-300 hover:border-black'>
+                            <div className='flex items-center justify-center border border-transparent rounded-lg bg-brand-primary hover:border cursor-pointer h-8 w-8 transition duration-300 hover:border-black'>
                                 <FaSearch className='text-white' size={18} />
                             </div>
                             <div onClick={getCurrentLocation} className='flex items-center justify-center border border-transparent  rounded-lg bg-blue-500 cursor-pointer hover:border transition duration-300 h-8 w-8 hover:border-black'>
@@ -298,15 +298,15 @@ function CheckOutPage() {
                             <hr className='text-gray-100' />
                             <div className='mb-2 flex justify-between'>
                                 <p className='font-semibold '>Total Amount</p>
-                                <span className='text-[#ff4d2d] font-bold'>₹ {totalAmountWithDeliveryFee}</span>
+                                <span className='text-brand-primary font-bold'>₹ {totalAmountWithDeliveryFee}</span>
                             </div>
                         </div>
                     </section>
                     <div className='w-full flex justify-center mb-2'>
-                        <button onClick={handlePlaceOrder} disabled={loading} className=' w-full text-white font-bold shadow-2xs bg-[#ff4d2d] rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105 cursor-pointer'>
+                        <button onClick={handlePlaceOrder} disabled={loading} className=' w-full text-white font-bold shadow-2xs bg-brand-primary rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105 cursor-pointer'>
 
                             {
-                                loading ? <ClipLoader size={20} color="#fff" /> :
+                                loading ? <ClipLoader size={20} color="var(--color-brand-on-primary)" /> :
                                     (paymentMethod === "cod" ? "Place Order" : "Pay & Place Order")
                             }
 

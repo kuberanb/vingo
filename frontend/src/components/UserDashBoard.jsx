@@ -39,14 +39,14 @@ function UserDashBoard() {
   }
 
   return (
-    <div className=' flex flex-col w-full min-h-screen gap-5 items-center bg-[#fff9f6] '>
+    <div className=' flex flex-col w-full min-h-screen gap-5 items-center bg-brand-surface '>
       <Nav />
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-2.5'>
         <h1 className='text-gray-800 text-2xl sm:text-3xl' >Inspiration for your first order</h1>
         <div className='w-full relative'>
           {
             leftCat &&
-            <button onClick={() => scrollLeft(catRef)} className='absolute left-2 z-10 top-1/2 rounded-full p-1 bg-[#ff4d2d] -translate-y-1/2  shadow-xl cursor-pointer'>
+            <button onClick={() => scrollLeft(catRef)} className='absolute left-2 z-10 top-1/2 rounded-full p-1 bg-brand-primary -translate-y-1/2  shadow-xl cursor-pointer'>
               <FaChevronCircleLeft className='text-white ' size={15} />
             </button>
 
@@ -57,7 +57,7 @@ function UserDashBoard() {
               name={value.category} imageUrl={value.image} key={index} />)}
           </div>
           {
-            rightCat && <button onClick={() => scrollRight(catRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-[#ff4d2d]'>
+            rightCat && <button onClick={() => scrollRight(catRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-brand-primary'>
               <FaChevronCircleRight className='text-white' size={15} />
             </button>
           }
@@ -74,7 +74,7 @@ function UserDashBoard() {
             <div className='w-full relative'>
               {
                 leftShop &&
-                <button onClick={() => scrollLeft(shopRef)} className='absolute left-2 z-10 top-1/2 rounded-full p-1 bg-[#ff4d2d] -translate-y-1/2  shadow-xl cursor-pointer'>
+                <button onClick={() => scrollLeft(shopRef)} className='absolute left-2 z-10 top-1/2 rounded-full p-1 bg-brand-primary -translate-y-1/2  shadow-xl cursor-pointer'>
                   <FaChevronCircleLeft className='text-white ' size={15} />
                 </button>
 
@@ -84,7 +84,7 @@ function UserDashBoard() {
                 {shopsInMyCity?.map((value, index) => <CategoryCard onclick={() => navigate(`/shop/${value._id}`)} name={value?.name} imageUrl={value?.image} key={index} />)}
               </div>
               {
-                rightShop && <button onClick={() => scrollRight(shopRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-[#ff4d2d]'>
+                rightShop && <button onClick={() => scrollRight(shopRef)} className='absolute right-2 z-10 top-1/2 shadow-xl cursor-pointer -translate-y-1/2 rounded-full p-1 bg-brand-primary'>
                   <FaChevronCircleRight className='text-white' size={15} />
                 </button>
               }

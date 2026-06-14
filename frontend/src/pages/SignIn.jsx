@@ -12,11 +12,6 @@ import { setUserData } from '../redux/userSlice';
 
 function SignIn() {
 
-  const primaryColor = "#ff4d2d";
-  const hoverColor = "#e64323";
-  const bgColor = "#fff9f6";
-  const borderColor = "#ddd";
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -78,10 +73,10 @@ function SignIn() {
 
   // ✅ JSX MUST BE RETURNED FROM COMPONENT
   return (
-    <div className='min-h-screen w-full flex items-center justify-center p-4' style={{ backgroundColor: bgColor }}>
-      <div className='shadow-lg p-8 max-w-md rounded-xl bg-white border w-full' style={{ border: `1px solid ${borderColor}` }}>
+    <div className='min-h-screen w-full flex items-center justify-center p-4 bg-brand-surface'>
+      <div className='shadow-lg p-8 max-w-md rounded-xl bg-white border border-brand-border w-full'>
 
-        <h1 className='text-3xl font-bold mb-2' style={{ color: primaryColor }}>
+        <h1 className='text-3xl font-bold mb-2 text-brand-primary'>
           Vingo
         </h1>
 
@@ -98,8 +93,7 @@ function SignIn() {
             onChange={(e) => setEmail(e.target.value)}
             type="text"
             placeholder='Enter your Email'
-            className='w-full rounded-md px-3 py-1.5 text-sm'
-            style={{ border: `1px solid ${borderColor}` }}
+            className='w-full rounded-md px-3 py-1.5 text-sm border border-brand-border'
           />
         </div>
 
@@ -113,8 +107,7 @@ function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
               type={showPassword ? "text" : "password"}
               placeholder='Enter your Password'
-              className='w-full rounded-md px-3 py-1.5 text-sm'
-              style={{ border: `1px solid ${borderColor}` }}
+              className='w-full rounded-md px-3 py-1.5 text-sm border border-brand-border'
             />
             <button
               type="button"
@@ -129,8 +122,7 @@ function SignIn() {
         {/* Forgot Password */}
         <div className='flex justify-end mb-4'>
           <span
-            className='text-sm cursor-pointer'
-            style={{ color: primaryColor }}
+            className='text-sm cursor-pointer text-brand-primary'
             onClick={() => navigate("/forgot-password")}
           >
             Forgot Password?
@@ -141,10 +133,9 @@ function SignIn() {
         <button
           onClick={handleSignIn}
           disabled={loading}
-          className="w-full py-2 px-4 rounded-md font-semibold text-white transition-colors"
-          style={{ backgroundColor: primaryColor }}
+          className="w-full py-2 px-4 rounded-md font-semibold text-white bg-brand-primary hover:bg-brand-primary-hover transition-colors"
         >
-          {loading ? <ClipLoader size={20} color="#ffffff" /> : "Sign In"}
+          {loading ? <ClipLoader size={20} color="var(--color-brand-on-primary)" /> : "Sign In"}
         </button>
 
         {/* Google Sign In */}
@@ -171,7 +162,7 @@ function SignIn() {
             className='text-sm cursor-pointer'
             onClick={() => navigate("/signup")}
           >
-            Don’t have an account? <span style={{ color: primaryColor, fontWeight: "600" }}>Sign Up</span>
+            Don’t have an account? <span className='text-brand-primary font-semibold'>Sign Up</span>
           </p>
         </div>
 

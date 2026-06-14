@@ -64,7 +64,7 @@ function UserOrderCard({ data }) {
         {/* Each shop */}
         {
           data.shopOrder?.map((shopOrder, index) => {
-            return (<div key={index} className='flex flex-col  bg-[#fff9f6] mb-4 p-4'>
+            return (<div key={index} className='flex flex-col  bg-brand-surface mb-4 p-4'>
               <h2 className='text-gray-600 font-semibold mb-1'>{shopOrder.shop?.name || "Shop"}</h2>
               <div className='rounded-lg w-full mb-4  '>
                 <div className='flex gap-x-4'>
@@ -101,7 +101,7 @@ function UserOrderCard({ data }) {
         <hr className='text-black mb-2' />
         <div className='flex justify-between font-semibold items-center'>
           <div>Total : ₹{data.totalAmount}</div>
-          <button onClick={() => navigate(`/track-order/${data._id}`)} className=' text-white font-bold shadow-2xs bg-[#ff4d2d] rounded-md px-4 py-1 transition-transform duration-200 hover:scale-105 cursor-pointer'>Track Order</button>
+          <button onClick={() => navigate(`/track-order/${data._id}`)} className=' text-white font-bold shadow-2xs bg-brand-primary rounded-md px-4 py-1 transition-transform duration-200 hover:scale-105 cursor-pointer'>Track Order</button>
         </div>
       </div>
     </div>

@@ -13,19 +13,19 @@ function OwnerDashBoard() {
   const myshopData = useSelector((state) => state.owner.myShopData);
   const navigate = useNavigate();
   return (
-    <div className='w-full min-h-screen bg-[#fff9f6] flex flex-col items-center'
+    <div className='w-full min-h-screen bg-brand-surface flex flex-col items-center'
     ><Nav />
       {
         !myshopData && (
 
           <div className=''>
             <div className='max-w-md w-full bg-white shadow-2xl rounded-2xl t  flex-col flex justify-center items-center p-4 sm:p-6'>
-              <FaUtensils size={60} className=' text-[#ff4d2d] mb-2 ' />
+              <FaUtensils size={60} className=' text-brand-primary mb-2 ' />
               <div className='font-bold text-black mb-2 text-2xl  text-center  '>Add Your Restuarant</div>
               <div className='text-gray-500 text-sm mb-2 text-center'>
                 Join our food delivery platform and reach thousands of hungry customers everyday.
               </div>
-              <button onClick={() => navigate("/create-edit-shop")} className='rounded-4xl shadow-md ring-1 bg-[#ff4d2d] text-white px-4 py-2 mb-2 cursor-pointer hover:bg-orange-600 transition-colors duration-300  '>Get Started</button>
+              <button onClick={() => navigate("/create-edit-shop")} className='rounded-4xl shadow-md ring-1 bg-brand-primary text-white px-4 py-2 mb-2 cursor-pointer hover:bg-orange-600 transition-colors duration-300  '>Get Started</button>
             </div>
 
           </div>
@@ -36,7 +36,7 @@ function OwnerDashBoard() {
 
           {/* Heading */}
           <div className='flex justify-center items-center gap-2'>
-            <FaUtensils size={30} className=' text-[#ff4d2d]  ' />
+            <FaUtensils size={30} className=' text-brand-primary  ' />
             <h1 className=' text-lg md:text-xl font-semibold text-center'>Welcome to {myshopData.name}</h1>
           </div>
 
@@ -44,7 +44,7 @@ function OwnerDashBoard() {
           <div className='w-full  md:max-w-xl shadow-lg rounded-b-lg  bg-white '>
             <div className='w-full overflow-hidden border rounded-t-lg max-h-60 mb-2 relative'>
               <img src={myshopData.image} className='object-cover w-full h-full' alt="Shop Image" />
-              <MdOutlineEdit onClick={() => navigate('/create-edit-shop')} size={30} className='text-white p-1 bg-[#ff4d2d] top-10 sm:top-12  md:top-12 lg:top-10 right-2 cursor-pointer rounded-full absolute' />
+              <MdOutlineEdit onClick={() => navigate('/create-edit-shop')} size={30} className='text-white p-1 bg-brand-primary top-10 sm:top-12  md:top-12 lg:top-10 right-2 cursor-pointer rounded-full absolute' />
 
             </div>
             <div className='px-4 py-2 mb-3 '>
@@ -57,12 +57,12 @@ function OwnerDashBoard() {
             myshopData?.items?.length === 0 ?
               <div className='mb-4'>
                 <div className='max-w-md w-full bg-white shadow-2xl rounded-2xl t  flex-col flex justify-center items-center p-4 sm:p-6'>
-                  <FaUtensils size={60} className=' text-[#ff4d2d] mb-2 ' />
+                  <FaUtensils size={60} className=' text-brand-primary mb-2 ' />
                   <div className='font-bold text-black mb-2 text-2xl  text-center  '>Add Your Food Item</div>
                   <div className='text-gray-500 text-sm mb-2 text-center'>
                     Share your delicious creations with our cutsomers by adding them to the menu.
                   </div>
-                  <button onClick={() => navigate("/add-food-item")} className='rounded-4xl shadow-md ring-1 bg-[#ff4d2d] text-white px-4 py-2 mb-2 cursor-pointer hover:bg-orange-600 transition-colors duration-300  '>Add Food Item</button>
+                  <button onClick={() => navigate("/add-food-item")} className='rounded-4xl shadow-md ring-1 bg-brand-primary text-white px-4 py-2 mb-2 cursor-pointer hover:bg-orange-600 transition-colors duration-300  '>Add Food Item</button>
                 </div>
 
               </div> :

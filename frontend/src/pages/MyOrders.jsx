@@ -36,14 +36,14 @@ function MyOrders() {
 
 
     return (
-        <div className='w-full min-h-screen bg-[#fff9f6]'>
-            <div className='flex items-center justify-center relative h-14 bg-[#fff9f6]'>
+        <div className='w-full min-h-screen bg-brand-surface'>
+            <div className='flex items-center justify-center relative h-14 bg-brand-surface'>
 
                 {/* Back Arrow (left) */}
                 <IoIosArrowRoundBack
                     onClick={() => navigate("/")}
                     size={30}
-                    className='absolute left-4 text-[#ff4d2d] cursor-pointer'
+                    className='absolute left-4 text-brand-primary cursor-pointer'
                 />
 
                 {/* Center Title */}
