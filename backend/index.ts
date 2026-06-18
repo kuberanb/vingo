@@ -1,17 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import connectDB from "./config/db.js";
+import connectDB from "./config/db";
 import cookieParser from "cookie-parser";
-import authRouter from "./routes/auth.routes.js";
-import userRouter from "./routes/user.routes.js";
+import authRouter from "./routes/auth.routes";
+import userRouter from "./routes/user.routes";
 import cors from "cors";
-import shopRouter from "./routes/shop.routes.js";
-import itemRouter from "./routes/item.routes.js";
-import orderRouter from "./routes/order.routes.js";
+import shopRouter from "./routes/shop.routes";
+import itemRouter from "./routes/item.routes";
+import orderRouter from "./routes/order.routes";
 import http from "http";
 import { Server, Socket } from "socket.io";
-import { socketHandler } from "./socket.js";
+import { socketHandler } from "./socket";
 
 const app = express();
 

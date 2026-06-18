@@ -1,8 +1,53 @@
-import uploadOnCloudinary from "../utils/cloudinary.js";
-import Shop from "../models/shop.model.js";
-import Item from "../models/item.model.js";
+import uploadOnCloudinary from "../utils/cloudinary";
+import Shop from "../models/shop.model";
+import Item from "../models/item.model";
+import { Request, Response } from "express";
 
-export const addItem = async (req, res) => {
+interface AddItemBody {
+  name: string;
+  category: string;
+  price: number;
+  foodType: string;
+}
+
+interface EditItemBody {
+  name: string;
+  category: string;
+  price: number;
+  foodType: string;
+}
+
+interface RatingBody {
+  itemId: string;
+  rating: string;
+}
+
+interface EditItemParams {
+  itemId: string;
+}
+
+interface GetItemParams {
+  itemId: string;
+}
+
+interface DeleteItemParams {
+  itemId: string;
+}
+
+interface GetItemsByCityQuery {
+  city: string;
+}
+
+interface GetItemsByShopParams {
+  shopId: string;
+}
+
+interface AuthRequest<P, T> extends Request<P, {}, T> {
+  userId?: string;
+  file?: Express.Multer.File;
+}
+
+export const addItem = async (req: AuthRequest<{}, AddItemBody>, res: Response): Promise<Response> => {
   try {
     const { name, category, price, foodType } = req.body;
 
@@ -30,7 +75,7 @@ export const addItem = async (req, res) => {
     await shop.populate("items owner");
 
     return res.status(201).json({ shop });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       message: "Error adding item",
       error: error.message,
@@ -38,7 +83,7 @@ export const addItem = async (req, res) => {
   }
 };
 
-export const editItem = async (req, res) => {
+export const editItem = async (req: AuthRequest<EditItemParams, EditItemBody>, res: Response): Promise<Response> => {
   try {
     const { name, category, price, foodType } = req.body;
 
@@ -55,7 +100,9 @@ export const editItem = async (req, res) => {
       return res.status(404).json({ message: "Shop Not found" });
     }
 
-    const updateData = {
+    const updateData: Partial<EditItemBody> & {
+      image?: string;
+    } = {
       name,
       category,
       price,
@@ -87,7 +134,7 @@ export const editItem = async (req, res) => {
       });
 
     return res.status(200).json({ shop: updatedShop });
-  } catch (error) {
+  } catch (error: any) {
     console.log(` Error editing item : ${error}`);
     return res
       .status(500)
@@ -95,7 +142,7 @@ export const editItem = async (req, res) => {
   }
 };
 
-export const getItem = async (req, res) => {
+export const getItem = async (req: Request<GetItemParams>, res: Response): Promise<Response> => {
   const { itemId } = req.params;
 
   try {
@@ -110,12 +157,12 @@ export const getItem = async (req, res) => {
     return res.status(200).json({
       item,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ error: error });
   }
 };
 
-export const deleteItem = async (req, res) => {
+export const deleteItem = async (req: AuthRequest<DeleteItemParams, {}>, res: Response): Promise<Response> => {
   const { itemId } = req.params;
 
   try {
@@ -130,11 +177,14 @@ export const deleteItem = async (req, res) => {
       shop: shop._id,
     });
 
-    if (!itemId) {
+    if (!item) {
       return res.status(404).json({ message: "Item Not found" });
     }
 
-    shop.items.pull(itemId);
+    shop.items = shop.items.filter(
+      (id) => id.toString() !== itemId
+    );
+
     await shop.save();
 
     const updatedShop = await Shop.findById(shop._id)
@@ -146,22 +196,25 @@ export const deleteItem = async (req, res) => {
         },
       });
     return res.status(200).json({ shop: updatedShop });
-  } catch (e) {
+  } catch (e: any) {
     return res.status(500).json({ error: e });
   }
 };
 
-export const getItemsByCity = async (req, res) => {
+export const getItemsByCity = async (req: Request<{}, {}, {}, GetItemsByCityQuery>, res: Response): Promise<Response> => {
   try {
     const { city } = req.query;
 
-    const shopList = await Shop.find({}).populate("items");
+    // const shopList = await Shop.find({}).populate("items");
+    const shopList = await Shop.find({
+      city,
+    }).populate("items");
 
     if (!shopList || shopList.length === 0) {
       return res.status(200).json({ message: "No Shop in the city" });
     }
 
-    let itemsList = [];
+    let itemsList: any[] = [];
 
     shopList.forEach((shop) => {
       itemsList.push(...shop.items);
@@ -172,12 +225,12 @@ export const getItemsByCity = async (req, res) => {
     }
 
     return res.status(200).json({ itemsList });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ message: `getItems error : ${error}` });
   }
 };
 
-export const getItemsByShop = async (req, res) => {
+export const getItemsByShop = async (req: Request<GetItemsByShopParams>, res: Response): Promise<Response> => {
   try {
     const { shopId } = req.params;
 
@@ -191,12 +244,12 @@ export const getItemsByShop = async (req, res) => {
       shop: shop,
       items: shop.items,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ message: `getItemsByShop error : ${error}` });
   }
 };
 
-export const rating = async (req, res) => {
+export const rating = async (req: AuthRequest<{}, RatingBody>, res: Response): Promise<Response> => {
   try {
     const { itemId, rating } = req.body;
 
@@ -228,7 +281,7 @@ export const rating = async (req, res) => {
       rating: Number(newAverageRating.toFixed(1)),
       rating_count: newCount,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ message: `rating error : ${error}` });
   }
 };

@@ -1,4 +1,44 @@
-import mongoose from "mongoose";
+import mongoose, { Model, Schema, Types } from "mongoose";
+import { IItem } from "./item.model";
+import { IUser } from "./user.model";
+import { IShop } from "./shop.model";
+
+import { IDeliveryAssignment } from "./deliveryAssignment.model";
+
+
+export interface IShopOrder {
+  shop?: Types.ObjectId | IShop;
+  owner?: Types.ObjectId | IUser;
+  subTotal?: number;
+  shopOrderItems: IshopOrderItem[];
+  status: "pending" | "preparing" | "out of delivery" | "delivered";
+  assignment?: Types.ObjectId | IDeliveryAssignment;
+  assignedDeliveryBoy?: Types.ObjectId | IUser;
+  deliveryOtp?: string;
+  otpExpires?: Date;
+  deliveredAt?: Date;
+};
+
+export interface IshopOrderItem {
+  item?: Types.ObjectId | IItem;
+  price: number;
+  quantity: number;
+}
+
+export interface IOrder {
+  user?: Types.ObjectId | IUser;
+  paymentMethod: "cod" | "online";
+  deliveryAddress?: {
+    text: string;
+    lattitude: number;
+    longitude: number;
+  };
+  totalAmount?: number;
+  shopOrder: IShopOrder[];
+  payment: boolean;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+}
 
 const shopOrderItemsSchema = new mongoose.Schema(
   {
@@ -53,7 +93,7 @@ const shopOrderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const orderSchema = new mongoose.Schema(
+const orderSchema = new Schema<IOrder>(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -89,5 +129,5 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Order = mongoose.model("Order", orderSchema);
+const Order : Model<IOrder> = mongoose.model<IOrder>("Order", orderSchema);
 export default Order;

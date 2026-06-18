@@ -77,14 +77,14 @@ function AddFoodItem() {
   }
 
   return (
-    <div className='flex flex-col   w-full min-h-screen bg-[#fff9f6]'>
-      <IoIosArrowRoundBack onClick={() => navigate("/")} size={30} className='text-[#ff4d2d] cursor-pointer' />
+    <div className='flex flex-col   w-full min-h-screen bg-brand-surface'>
+      <IoIosArrowRoundBack onClick={() => navigate("/")} size={30} className='text-brand-primary cursor-pointer' />
 
       <div className=' flex items-center justify-center min-h-screen w-full  '>
 
         <div className='text-center max-w-lg md:max-w-md shadow-lg rounded-2xl p-4 sm:p-6 lg:p-8 bg-white flex flex-col items-center  '>
-          <div className="flex items-center justify-center p-4 rounded-full bg-[#ff4d2d]/10 mb-2 ">
-            <FaUtensils size={60} className="text-[#ff4d2d]" />
+          <div className="flex items-center justify-center p-4 rounded-full bg-brand-primary/10 mb-2 ">
+            <FaUtensils size={60} className="text-brand-primary" />
           </div>
 
           <div className=' font-black   text-lg mb-2 '>
@@ -140,7 +140,7 @@ function AddFoodItem() {
             <button disabled={loading}
               type='submit'
 
-              className='bg-[#ff4d2d] w-full text-white px-2 py-1 rounded-lg hover:bg-[#ff4d2d]/80 duration-300 mb-4 cursor-pointer' >
+              className='bg-brand-primary w-full text-white px-2 py-1 rounded-lg hover:bg-brand-primary/80 duration-300 mb-4 cursor-pointer' >
               {
                 loading ? <ClipLoader size={20} /> : <div>Save</div>
 

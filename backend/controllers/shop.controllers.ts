@@ -1,9 +1,25 @@
-import Shop from "../models/shop.model.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import Shop from "../models/shop.model";
+import uploadOnCloudinary from "../utils/cloudinary";
 
-export const createEditShop = async (req, res) => {
+import { Request, Response } from "express";
+
+interface AuthRequest extends Request {
+  userId?: string;
+}
+
+interface GetShopsByCityQuery {
+  city?: string;
+}
+
+
+
+export const createEditShop = async (req: AuthRequest, res: Response) => {
   try {
     const { name, city, state, address } = req.body;
+    if (!req.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     let image;
     if (req.file) {
       image = await uploadOnCloudinary(req.file.path);
@@ -38,7 +54,7 @@ export const createEditShop = async (req, res) => {
   }
 };
 
-export const getCurrentShop = async (req, res) => {
+export const getCurrentShop = async (req: AuthRequest, res: Response) => {
   try {
     let shop = await Shop.findOne({ owner: req.userId }).populate(
       "owner items",
@@ -55,11 +71,13 @@ export const getCurrentShop = async (req, res) => {
   }
 };
 
-export const getShops = async (req, res) => {
+
+
+export const getShops = async (req: Request<{}, {}, {}, GetShopsByCityQuery>, res: Response): Promise<Response> => {
   const { city } = req.query;
 
   try {
-    let query = {};
+    let query: any = {};
 
     if (city) {
       query.city = { $regex: `^${city.trim()}$`, $options: "i" };

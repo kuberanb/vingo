@@ -54,7 +54,7 @@ function FoodCard({ data }) {
 
 
     return (
-        <div className=' flex flex-col w-60 overflow-hidden relative  rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-xl cursor-pointer '>
+        <div className=' flex flex-col w-60 overflow-hidden relative  rounded-2xl border-2 border-brand-primary bg-white shadow-xl cursor-pointer '>
 
             <div className=' h-40 w-60 relative'>
                 <img src={data.image} alt={data.name}
@@ -96,7 +96,7 @@ function FoodCard({ data }) {
                             <IoMdAdd onClick={increaseFoodCount} size={20} className='text-black cursor-pointer font-semibold hover:bg-gray-300 hover:rounded-full ' />
                         </div>
 
-                        <div className={` cursor-pointer flex h-full px-2 rounded-r-2xl ${isInCart ? 'bg-gray-500' : 'bg-[#ff4d2d]'}        `}>
+                        <div className={` cursor-pointer flex h-full px-2 rounded-r-2xl ${isInCart ? 'bg-gray-500' : 'bg-brand-primary'}        `}>
                             <FaShoppingCart onClick={
 
                                 () => {

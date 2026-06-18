@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-primary: #ff4d2d;
+  --color-brand-primary-hover: #e64323;
+  --color-brand-surface: #fff9f6;
+  --color-brand-border: #ddd;
+  --color-brand-text: #333;
+  --color-brand-on-primary: #fff;
+}
+
 * {
   /* ya scroll * */
   scrollbar-width: none; /*  Firefox */

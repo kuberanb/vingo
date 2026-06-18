@@ -7,7 +7,7 @@ import {
   verifyOtp,
   resetPassword,
   googleAuth,
-} from "../controllers/auth.controllers.js";
+} from "../controllers/auth.controllers";
 
 const authRouter = express.Router();
 

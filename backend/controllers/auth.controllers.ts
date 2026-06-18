@@ -1,14 +1,51 @@
 import bcrypt from "bcryptjs";
-import User from "../models/user.model.js";
-import genToken from "../utils/token.js";
-import { sendOtpMail } from "../utils/mail.js";
+import User from "../models/user.model";
+import genToken from "../utils/token";
+import { sendOtpMail } from "../utils/mail";
+import { Request, Response } from "express";
 
-export const signup = async (req, res) => {
+interface SignupBody {
+  fullName: string;
+  email: string;
+  password: string;
+  mobile: string;
+  role: string;
+}
+
+interface SignInBody {
+  email: string;
+  password: string;
+}
+
+interface SendOtpBody {
+  email: string;
+}
+
+interface verifyOtpBody {
+  email: string;
+  otp: string;
+}
+
+interface ResetPasswordBody {
+  email: string;
+  password: string;
+}
+
+interface GoogleAuthBody {
+  fullName: string;
+  mobile: string;
+  email: string;
+  role: string;
+}
+
+
+export const signup = async (req: Request<{}, {}, SignupBody>, res: Response) => {
   const { fullName, email, password, mobile, role } = req.body;
 
-  let user = await User.findOne({ email });
 
   try {
+    let user = await User.findOne({ email });
+
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -50,12 +87,13 @@ export const signup = async (req, res) => {
   }
 };
 
-export const signIn = async (req, res) => {
+export const signIn = async (req: Request<{}, {}, SignInBody>, res: Response) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
 
   try {
+    const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });
     }
@@ -67,7 +105,7 @@ export const signIn = async (req, res) => {
     }
 
     if (isPassowrdMatch) {
-      const token = await genToken(user._id);
+      const token = await genToken(user._id.toString());
 
       res.cookie("token", token, {
         httpOnly: true,
@@ -78,14 +116,14 @@ export const signIn = async (req, res) => {
 
       return res.status(200).json(user);
     }
-  } catch (error) {
+  } catch (error: any) {
     return res
       .status(500)
       .json({ message: `Sign In Error : ${error.message}` });
   }
 };
 
-export const signOut = async (req, res) => {
+export const signOut = async (req: Request, res: Response): Promise<void> => {
   try {
     await res.clearCookie("token", {
       httpOnly: true,
@@ -94,12 +132,12 @@ export const signOut = async (req, res) => {
     });
 
     res.status(200).json({ message: "Sign Out Sucessful" });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: `Sign Out Error : ${error.message}` });
   }
 };
 
-export const sendOtp = async (req, res) => {
+export const sendOtp = async (req: Request<{}, {}, SendOtpBody>, res: Response) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email: email });
@@ -113,7 +151,7 @@ export const sendOtp = async (req, res) => {
 
     // Save OTP and its expiration time in the database
     user.resetOtp = otp;
-    user.otpExpired = Date.now() + 5 * 60 * 1000; // OTP expires in 5 minutes
+    user.otpExpired = new Date(Date.now() + 5 * 60 * 1000); // otp expires in 5 mins
     user.isOtpVerified = false;
     await user.save();
 
@@ -126,7 +164,7 @@ export const sendOtp = async (req, res) => {
   }
 };
 
-export const verifyOtp = async (req, res) => {
+export const verifyOtp = async (req: Request<{}, {}, verifyOtpBody>, res: Response) => {
   const { otp, email } = req.body;
 
   try {
@@ -134,9 +172,9 @@ export const verifyOtp = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });
-    } else if (user.otpExpired < Date.now()) {
+    } else if (!user.otpExpired || user.otpExpired.getTime() < Date.now()) {
       return res.status(400).json({ message: "Otp Expired" });
-    } else if (user.resetOtp !== otp) {
+    } else if (user.resetOtp.toString() !== otp.toString()) {
       return res.status(400).json({ message: "Invalid Otp" });
     }
 
@@ -151,7 +189,7 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = async (req: Request<{}, {}, ResetPasswordBody>, res: Response) => {
   const { email, password } = req.body;
 
   try {
@@ -192,7 +230,7 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-export const googleAuth = async (req, res) => {
+export const googleAuth = async (req: Request<{}, {}, GoogleAuthBody>, res: Response) => {
   try {
     const { fullName, mobile, email, role } = req.body;
 

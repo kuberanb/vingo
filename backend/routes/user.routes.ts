@@ -1,8 +1,8 @@
 import express from "express";
 import getCurrentUser, {
   updateUserLocation,
-} from "../controllers/user.controllers.js";
-import isAuth from "../middlewares/isAuth.js";
+} from "../controllers/user.controllers";
+import isAuth from "../middlewares/isAuth";
 
 const userRouter = express.Router();
 

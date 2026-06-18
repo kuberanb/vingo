@@ -62,23 +62,23 @@ function Nav() {
   return (
     <div className=''>
 
-      <div className='w-full h-20 flex items-center justify-between fixed top-0 left-0 z-9999 overflow-visible bg-[#fff9f6] p-4 '>
+      <div className='w-full h-20 flex items-center justify-between fixed top-0 left-0 z-9999 overflow-visible bg-brand-surface p-4 '>
 
         {/* Left */}
-        <h1 className='text-3xl font-bold  text-[#ff4d2d]' >Vingo</h1>
+        <h1 className='text-3xl font-bold  text-brand-primary' >Vingo</h1>
 
         {/* Center */}
         {
           userData.role === "user" && <div className=' h-12 md:w-[55%] lg:w-[40%]  shadow-xl hidden px-4  md:flex items-center '  >
             <div className='flex gap-2 items-center px-5 ' >
-              <FaLocationDot size={20} className='text-[#ff4d2d]' />
+              <FaLocationDot size={20} className='text-brand-primary' />
               <div className='text-sm overflow-hidden ellipsis' >{city}</div>
             </div>
             {/* Vertical Divider */}
             <div className="w-px h-5 bg-gray-300 mx-3"></div>
 
             <div className='flex items-center gap-2 w-full'>
-              <IoSearchOutline size={20} className='text-[#ff4d2d]' />
+              <IoSearchOutline size={20} className='text-brand-primary' />
               <input value={searchQuery} onChange={handleSearchChange} placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
             </div>
 
@@ -91,14 +91,14 @@ function Nav() {
 
           {
             userData?.role == "owner" ? <>
-              <button onClick={() => navigate('/add-food-item')} className='   cursor-pointer flex items-center gap-2  md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg  '  >
-                <FaPlus size={20} className='text-[#ff4d2d]' />
+              <button onClick={() => navigate('/add-food-item')} className='   cursor-pointer flex items-center gap-2  md:flex  bg-brand-primary/10 text-brand-primary px-4 py-2 rounded-lg  '  >
+                <FaPlus size={20} className='text-brand-primary' />
                 <span className=' hidden md:flex'>Add Food Item</span>
 
               </button>
-              <button onClick={() => navigate('/my-orders')} className='flex items-center gap-2 cursor-pointer  bg-[#ff4d2d]/10 px-4 py-2 rounded-lg relative'>
-                <IoReceipt size={20} className=' text-[#ff4d2d] ' />
-                <span className='hidden md:flex  text-[#ff4d2d]  '>My Orders</span>
+              <button onClick={() => navigate('/my-orders')} className='flex items-center gap-2 cursor-pointer  bg-brand-primary/10 px-4 py-2 rounded-lg relative'>
+                <IoReceipt size={20} className=' text-brand-primary ' />
+                <span className='hidden md:flex  text-brand-primary  '>My Orders</span>
                 {/* <span className='absolute -top-3 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center font-bold justify-center text-xs'>{myOrdersLength}</span> */}
               </button>
 
@@ -112,7 +112,7 @@ function Nav() {
                         setSearchQuery("");
                       }}
                       size={35}
-                      className="text-[#ff4d2d] md:hidden font-bold cursor-pointer"
+                      className="text-brand-primary md:hidden font-bold cursor-pointer"
                     />
                   ) : (
                     <IoMdClose
@@ -120,7 +120,7 @@ function Nav() {
                         closeSearch();
                       }}
                       size={35}
-                      className="text-[#ff4d2d] md:hidden font-bold cursor-pointer"
+                      className="text-brand-primary md:hidden font-bold cursor-pointer"
                     />
                   )
                 )
@@ -132,7 +132,7 @@ function Nav() {
                 </div>
               }
 
-              <button onClick={() => navigate('/my-orders')} className='hidden md:flex  bg-[#ff4d2d]/10 text-[#ff4d2d] px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
+              <button onClick={() => navigate('/my-orders')} className='hidden md:flex  bg-brand-primary/10 text-brand-primary px-4 py-2 rounded-lg cursor-pointer'>My Orders</button>
 
             </>)
 
@@ -160,16 +160,16 @@ function Nav() {
 
           <div className='flex items-center justify-center mt-2' >
 
-            <div className=' fixed top-22 z-9999 w-[90%] justify-center  h-15  flex md:hidden bg-[#fff9f6] shadow-xl px-4   items-center '  >
+            <div className=' fixed top-22 z-9999 w-[90%] justify-center  h-15  flex md:hidden bg-brand-surface shadow-xl px-4   items-center '  >
               <div className='flex gap-2 items-center px-2 ' >
-                <FaLocationDot size={20} className='text-[#ff4d2d]' />
+                <FaLocationDot size={20} className='text-brand-primary' />
                 <div className='text-sm overflow-hidden ellipsis' >{city} </div>
               </div>
               {/* Vertical Divider */}
               <div className="w-px h-5 bg-gray-300 mx-3"></div>
 
               <div className='flex items-center gap-2 w-full'>
-                <IoSearchOutline size={20} className='text-[#ff4d2d]' />
+                <IoSearchOutline size={20} className='text-brand-primary' />
                 <input value={searchQuery} onChange={handleSearchChange} placeholder='Search delicious foods...' className='w-full h-10 px-3 focus:outline-none' type="text" />
               </div>
             </div>
@@ -179,9 +179,9 @@ function Nav() {
       {
         (searchQuery.trim() && userData.role === "user") && (
           <div className='fixed left-0 right-0 bottom-0 top-40 md:top-20 z-9998 bg-black/40 pt-4 px-4 overflow-y-auto'>
-            <div className='w-full max-w-6xl mx-auto bg-[#fff9f6] rounded-xl shadow-xl p-4'>
+            <div className='w-full max-w-6xl mx-auto bg-brand-surface rounded-xl shadow-xl p-4'>
               <div className='w-full flex justify-end mb-4'>
-                <IoMdClose onClick={closeSearch} size={30} className='text-[#ff4d2d] cursor-pointer' />
+                <IoMdClose onClick={closeSearch} size={30} className='text-brand-primary cursor-pointer' />
               </div>
               <div className='w-full flex flex-wrap justify-center gap-4 pb-4'>
                 {searchedItems.length > 0 ? (

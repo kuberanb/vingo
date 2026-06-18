@@ -126,10 +126,10 @@ function OwnerOrderCard({ data }) {
 
       <div className="flex w-full flex-row justify-between mb-2">
         <div className="font-semibold">
-          status: <span className="text-[#ff4d2d]">{shopOrder.status}</span>
+          status: <span className="text-brand-primary">{shopOrder.status}</span>
         </div>
         <select
-          className="border border-[#ff4d2d] text-[#ff4d2d] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#ff4d2d]"
+          className="border border-brand-primary text-brand-primary rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           value={shopOrder.status}
           onChange={(e) => {
             handleUpdateStatus(data._id, shopOrder.shop._id, e.target.value);

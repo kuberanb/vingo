@@ -149,12 +149,12 @@ function DeliveryBoyDashBoard() {
 
 
     return (
-        <div className='flex flex-col w-full min-h-screen gap-5 items-center bg-[#fff9f6] overflow-y-auto'>
+        <div className='flex flex-col w-full min-h-screen gap-5 items-center bg-brand-surface overflow-y-auto'>
             <Nav />
             <div className='w-full max-w-2xl flex flex-col gap-5 items-start p-2.5 ' >
                 <div className='w-full shadow rounded-xl px-2 py-2 flex flex-col items-center justify-center gap-2 bg-white mb-2 text-center'>
-                    <div className='font-semibold text-2xl text-[#ff4d2d]'>Welcome, {userData.fullName}</div>
-                    <div className='font-semibold text-xs text-[#ff4d2d]'>Lattitude :  <span className=' font-semibold'>{deliveryBoyLocation?.lat || userData.location.coordinates[1]}</span>  Longitude : <span className='font-semibold'>{deliveryBoyLocation?.lon || userData.location.coordinates[0]}</span></div>
+                    <div className='font-semibold text-2xl text-brand-primary'>Welcome, {userData.fullName}</div>
+                    <div className='font-semibold text-xs text-brand-primary'>Lattitude :  <span className=' font-semibold'>{deliveryBoyLocation?.lat || userData.location.coordinates[1]}</span>  Longitude : <span className='font-semibold'>{deliveryBoyLocation?.lon || userData.location.coordinates[0]}</span></div>
                 </div>
 
                 {!currentOrder && <div className='w-full shadow rounded-xl px-4 py-4 flex flex-col items-start justify-center gap-2 bg-white mb-2'>
@@ -177,7 +177,7 @@ function DeliveryBoyDashBoard() {
                                         </div>
 
                                         <button onClick={() => acceptOrder(a.assignmentId)}
-                                            className="px-4 py-2 rounded-lg bg-[#ff4d2d] text-white font-semibold
+                                            className="px-4 py-2 rounded-lg bg-brand-primary text-white font-semibold
                  transform transition-transform duration-200 hover:scale-110 cursor-pointer"
                                         >
                                             Accept

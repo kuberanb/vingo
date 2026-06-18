@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { serverUrl } from '../App.jsx';
 import {
-  getAuth,
   GoogleAuthProvider,
   signInWithPopup
 } from "firebase/auth"
@@ -18,11 +17,6 @@ import { setUserData } from '../redux/userSlice.js';
 
 
 function SignUp() {
-  const primaryColor = "#ff4d2d";
-  const hoverColor = "#e64323";
-  const bgColor = "#fff9f6";
-  const borderColor = "#ddd"
-
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState("user");
   const navigate = useNavigate();
@@ -78,8 +72,6 @@ function SignUp() {
     const user = result.user;
 
     // ✅ Make it serializable
-    const safeUser = JSON.parse(JSON.stringify(user));
-
     console.log("Google Sign-In successful. User:", user);
 
 
@@ -107,9 +99,9 @@ function SignUp() {
   }
 
   return (
-    <div className='min-h-screen w-full flex items-center justify-center p-4 ' style={{ backgroundColor: bgColor }} >
-      <div className=' shadow-lg p-8 max-w-md rounded-xl bg-white border w-full ' style={{ border: `1px solid ${borderColor}` }} >
-        <h1 className=' text-3xl font-bold mb-2 ' style={{ color: primaryColor }}>
+    <div className='min-h-screen w-full flex items-center justify-center p-4 bg-brand-surface '>
+      <div className=' shadow-lg p-8 max-w-md rounded-xl bg-white border border-brand-border w-full '>
+        <h1 className=' text-3xl font-bold mb-2 text-brand-primary '>
           Vingo
         </h1>
         <p className='text-gray-600 mb-8' style={{}}>Create your account to get started with delicious food deliveries</p>
@@ -117,25 +109,25 @@ function SignUp() {
         {/* Full Name */}
         <div className='mb-4'>
           <label htmlFor="fullName" className='font-medium mb-1'>Full Name</label>
-          <input id='fullName' required onChange={(e) => setFullName(e.target.value)} value={fullName} type="text" placeholder='Enter your Full Name' className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs  ' style={{ border: `1px solid ${borderColor}` }} />
+          <input id='fullName' required onChange={(e) => setFullName(e.target.value)} value={fullName} type="text" placeholder='Enter your Full Name' className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs border border-brand-border ' />
         </div>
         {/* Email */}
         <div className='mb-4'>
           <label htmlFor="email" className='font-medium mb-1'>Email</label>
-          <input id='email' required onChange={(e) => setEmail(e.target.value)} value={email} type="text" placeholder='Enter your Email' className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs  ' style={{ border: `1px solid ${borderColor}` }} />
+          <input id='email' required onChange={(e) => setEmail(e.target.value)} value={email} type="text" placeholder='Enter your Email' className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs border border-brand-border ' />
         </div>
         {/* Mobile */}
         <div className='mb-4'>
           <label htmlFor="mobile" className='font-medium mb-1'>Mobile Number</label>
           <input id='mobile' required onChange={(e) => setMobile(e.target.value)} value={mobile} type="text" placeholder='Enter your Mobile Number'
-            className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs ' style={{ border: `1px solid ${borderColor}` }} />
+            className='w-full rounded-md px-3 py-1.5 text-sm placeholder:text-xs border border-brand-border ' />
         </div>
         {/* Password */}
         <div className='mb-4'>
           <label htmlFor="password" className='font-medium mb-1'>Password</label>
 
           <div className='relative'>
-            <input id='password' required onChange={(e) => setPassword(e.target.value)} value={password} type={showPassword ? "text" : "password"} placeholder='Enter your Password' className='w-full rounded-md px-3 py-1.5 text-sm relative placeholder:text-xs   ' style={{ border: `1px solid ${borderColor}` }} />
+            <input id='password' required onChange={(e) => setPassword(e.target.value)} value={password} type={showPassword ? "text" : "password"} placeholder='Enter your Password' className='w-full rounded-md px-3 py-1.5 text-sm relative placeholder:text-xs border border-brand-border ' />
             <button className='absolute right-3 top-1/4 cursor-pointer  text-gray-500' onClick={() => setShowPassword(prev => !prev)} >{!showPassword ? <FaEye /> : <FaEyeSlash />}</button>
 
           </div>
@@ -150,12 +142,7 @@ function SignUp() {
                 key={roleX}
                 type="button"
                 onClick={() => setRole(roleX)}
-                className="rounded-md px-4 py-2 font-semibold text-center transition-colors cursor-pointer"
-                style={{
-                  border: `1px solid ${hoverColor}`,
-                  backgroundColor: role === roleX ? primaryColor : "#fff",
-                  color: role === roleX ? "#fff" : "#333",
-                }}
+                className={`rounded-md px-4 py-2 font-semibold text-center transition-colors cursor-pointer border border-brand-primary-hover ${role === roleX ? "bg-brand-primary text-brand-on-primary" : "bg-white text-brand-text"}`}
               >
                 {roleX}
               </button>
@@ -165,8 +152,8 @@ function SignUp() {
         {/* SignUp */}
         <div className="flex items-center justify-center mb-4">
           <button type="button"
-            disabled={loading} onClick={handleSignUp} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-[#ff4d2d] hover:bg-[#e64323] transition-colors">
-            {loading ? <ClipLoader size={20} color="#ffffff" /> : "Sign Up"}
+            disabled={loading} onClick={handleSignUp} className="w-full py-2 px-4 rounded-md font-semibold text-white cursor-pointer bg-brand-primary hover:bg-brand-primary-hover transition-colors">
+            {loading ? <ClipLoader size={20} color="var(--color-brand-on-primary)" /> : "Sign Up"}
           </button>
         </div>
         {error && <div className='text-red-500 text-sm mb-2 text-center' >*{error}</div>}
@@ -181,7 +168,7 @@ function SignUp() {
 
         {/* Already have an account? SignIn */}
         <div className='' >
-          <p className='text-sm text-center cursor-pointer ' onClick={() => navigate("/signIn")} >Already have an account? <span className='text-[#ff4d2d] font-semibold' >SignIn</span></p>
+          <p className='text-sm text-center cursor-pointer ' onClick={() => navigate("/signIn")} >Already have an account? <span className='text-brand-primary font-semibold' >SignIn</span></p>
         </div>
 
       </div>
